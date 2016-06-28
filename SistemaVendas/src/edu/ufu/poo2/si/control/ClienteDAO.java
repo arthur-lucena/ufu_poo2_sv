@@ -1,6 +1,7 @@
 package edu.ufu.poo2.si.control;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,28 +12,67 @@ import edu.ufu.poo2.si.model.Cliente;
 public class ClienteDAO {
 
 	private FactoryConnection fc;
-	private String tabela = "contatos";
-	private String columns = "cpf, nome";
+	private String tabela = "cliente";
+	private String columns = "cpf, "
+			+ "nome_cliente";
 
-	public ClienteDAO(FactoryConnection fc) {
-		this.fc = fc;
+	public ClienteDAO() {
+		this.fc = FactoryConnection.getInstance();
 	}
 
-	public List<Cliente> buscarClientes(Cliente c) {
+	public List<Cliente> buscarTodos() {
 		List<Cliente> retorno = new ArrayList<Cliente>();
-
+        
+        try {
+        	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente");
+        	
+	        ResultSet rs = stmt.executeQuery();
+	
+	        Cliente cliente;
+	        
+	        while (rs.next()) {
+	        	cliente = new Cliente();
+	        	cliente.setCPF(rs.getString("cpf"));
+	        	cliente.setNome(rs.getString("nome_cliente"));
+	
+	            retorno.add(cliente);
+	        }
+	        
+	        rs.close();
+	        stmt.close();
+        } catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return retorno;
 	}
 
 	public Cliente buscar(Cliente c) {
 		Cliente retorno = new Cliente();
 
+        try {
+        	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente where cpf = ?");
+        	stmt.setString(1, c.getCPF());
+        	
+	        ResultSet rs = stmt.executeQuery();
+		        
+	        if (rs.next()) {
+	        	retorno.setCPF(rs.getString("cpf"));
+	        	retorno.setNome(rs.getString("nome_cliente"));
+	        } else {
+	        	return null;
+	        }
+	        
+	        rs.close();
+	        stmt.close();
+        } catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return retorno;
 	}
 
 	public Cliente insert(Cliente c) {
-		Cliente retorno = new Cliente();
-
 		String sql = "insert into " + tabela + "(" + columns + ") " + "values (?,?)";
 
 		PreparedStatement stmt;
@@ -51,18 +91,47 @@ public class ClienteDAO {
 			e.printStackTrace();
 		}
 
-		return retorno;
+		return c;
 	}
 
 	public Cliente update(Cliente c) {
-		Cliente retorno = new Cliente();
+		String sql = "update " + tabela + " set nome_cliente = ? where cpf = ?";
 
-		return retorno;
+		PreparedStatement stmt;
+
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
+	
+			stmt.setString(1, c.getNome());
+			stmt.setString(2, c.getCPF());
+
+			stmt.execute();
+			stmt.close();
+
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return c;
 	}
 
-	public Cliente delete(Cliente c) {
-		Cliente retorno = new Cliente();
+	public void delete(Cliente c) {
+		String sql = "delete from " + tabela + " where cpf = ?";
 
-		return retorno;
+		PreparedStatement stmt;
+
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
+	
+			stmt.setString(1, c.getCPF());
+
+			stmt.execute();
+			stmt.close();
+
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -2,23 +2,28 @@ package edu.ufu.poo2.si.model;
 
 public class Cliente {
 
-	private String Nome;
+	private String nome;
 
 	private String CPF;
 
 	public String getNome() {
-		return Nome;
+		return nome;
 	}
 
 	public void setNome(String nome) {
-		Nome = nome;
+		this.nome = nome;
 	}
 
 	public String getCPF() {
 		return CPF;
 	}
 
-	public void setCPF(String cPF) {
-		CPF = cPF;
-	}	
+	public void setCPF(String CPF) {
+		this.CPF = CPF;
+	}
+
+	@Override
+	public String toString() {
+		return "Cliente [nome=" + nome + ", CPF=" + CPF + "]";
+	}
 }
