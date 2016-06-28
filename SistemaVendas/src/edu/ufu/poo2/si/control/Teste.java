@@ -1,10 +1,16 @@
 package edu.ufu.poo2.si.control;
 
 import edu.ufu.poo2.si.model.Cliente;
+import edu.ufu.poo2.si.model.Vendedor;
+import edu.ufu.poo2.si.util.EnumNivelVendedor;
 
 public class Teste {
 
 	public static void main(String[] args) {
+		testeVendedor();
+	}
+
+	public static void testeCliente() {
 		ClienteDAO dao = new ClienteDAO();
 		
 		Cliente c1 = new Cliente();
@@ -31,5 +37,34 @@ public class Teste {
 			System.out.println(ce);
 		}
 	}
-
+	
+	public static void testeVendedor() {
+		VendedorDAO dao = new VendedorDAO();
+		
+		Vendedor v1 = new Vendedor();
+		v1.setCPF("09052671680");
+		v1.setNome("Arthur Lucena");
+		v1.setNivel(EnumNivelVendedor.Ouro);
+		
+		Vendedor v2 = new Vendedor();
+		v2.setCPF("09052671681");
+		v2.setNome("Arthur Lucena");
+		v2.setNivel(EnumNivelVendedor.Prata);
+			
+		dao.delete(v1);
+		dao.insert(v1);
+		
+		dao.delete(v2);
+		dao.insert(v2);
+		
+		v1.setNome("Art Luc");
+		dao.update(v1);
+		
+		Vendedor c = dao.buscar(v1);
+		System.out.println(c);
+		
+		for (Vendedor ce : dao.buscarTodos()) {
+			System.out.println(ce);
+		}
+	}
 }

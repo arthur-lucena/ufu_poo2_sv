@@ -33,4 +33,11 @@ public class Vendedor {
 	public void setNivel(EnumNivelVendedor nivel) {
 		this.nivel = nivel;
 	}
+
+	@Override
+	public String toString() {
+		return "Vendedor [Nome=" + Nome + ", CPF=" + CPF + ", nivel=" + nivel + "]";
+	}
+	
+	
 }
