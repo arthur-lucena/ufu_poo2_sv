@@ -1,8 +1,16 @@
 package edu.ufu.poo2.si.model;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.ufu.poo2.si.util.EnumFormaPagamento;
 
 public class Pedido {
+	
+	private Long codigoPedido;
+	
+	private List<ItemVenda> itens;
 
 	private Vendedor vendedor;
 
@@ -10,7 +18,26 @@ public class Pedido {
 
 	private EnumFormaPagamento formaPagamento;
 
-	private double valorTotal;
+	private BigDecimal valorTotal;
+
+	public Long getCodigoPedido() {
+		return codigoPedido;
+	}
+
+	public void setCodigoPedido(Long codigoPedido) {
+		this.codigoPedido = codigoPedido;
+	}
+
+	public List<ItemVenda> getItens() {
+		if (itens == null)
+			return new ArrayList<ItemVenda>();
+		
+		return itens;
+	}
+
+	public void setItens(List<ItemVenda> itens) {
+		this.itens = itens;
+	}
 
 	public Vendedor getVendedor() {
 		return vendedor;
@@ -36,11 +63,11 @@ public class Pedido {
 		this.formaPagamento = formaPagamento;
 	}
 
-	public double getValorTotal() {
+	public BigDecimal getValorTotal() {
 		return valorTotal;
 	}
 
-	public void setValorTotal(double valorTotal) {
+	public void setValorTotal(BigDecimal valorTotal) {
 		this.valorTotal = valorTotal;
 	}
 }

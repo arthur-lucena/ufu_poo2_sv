@@ -50,12 +50,12 @@ public class VendedorDAO {
 		return retorno;
 	}
 
-	public Vendedor buscar(Vendedor v) {
+	public Vendedor buscar(String cpf) {
 		Vendedor retorno = new Vendedor();
 
         try {
         	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from " + tabela +" where cpf = ?");
-        	stmt.setString(1, v.getCPF());
+        	stmt.setString(1, cpf);
         	
 	        ResultSet rs = stmt.executeQuery();
 		        
@@ -122,7 +122,7 @@ public class VendedorDAO {
 		return v;
 	}
 
-	public void delete(Vendedor v) {
+	public void delete(String cpf) {
 		String sql = "delete from " + tabela + " where cpf = ?";
 
 		PreparedStatement stmt;
@@ -130,7 +130,7 @@ public class VendedorDAO {
 		try {
 			stmt = fc.getConnection().prepareStatement(sql);
 	
-			stmt.setString(1, v.getCPF());
+			stmt.setString(1, cpf);
 
 			stmt.execute();
 			stmt.close();

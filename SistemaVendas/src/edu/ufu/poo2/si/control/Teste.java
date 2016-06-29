@@ -21,16 +21,16 @@ public class Teste {
 		c2.setCPF("09052671681");
 		c2.setNome("Arthur Lucena");
 			
-		dao.delete(c1);
+		dao.delete(c1.getCPF());
 		dao.insert(c1);
 		
-		dao.delete(c2);
+		dao.delete(c2.getCPF());
 		dao.insert(c2);
 		
 		c1.setNome("Art Luc");
 		dao.update(c1);
 		
-		Cliente c = dao.buscar(c1);
+		Cliente c = dao.buscar(c1.getCPF());
 		System.out.println(c);
 		
 		for (Cliente ce : dao.buscarTodos()) {
@@ -51,16 +51,16 @@ public class Teste {
 		v2.setNome("Arthur Lucena");
 		v2.setNivel(EnumNivelVendedor.Prata);
 			
-		dao.delete(v1);
+		dao.delete(v1.getCPF());
 		dao.insert(v1);
 		
-		dao.delete(v2);
+		dao.delete(v2.getCPF());
 		dao.insert(v2);
 		
 		v1.setNome("Art Luc");
 		dao.update(v1);
 		
-		Vendedor c = dao.buscar(v1);
+		Vendedor c = dao.buscar(v1.getCPF());
 		System.out.println(c);
 		
 		for (Vendedor ce : dao.buscarTodos()) {

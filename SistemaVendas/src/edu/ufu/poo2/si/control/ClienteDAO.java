@@ -47,12 +47,12 @@ public class ClienteDAO {
 		return retorno;
 	}
 
-	public Cliente buscar(Cliente c) {
+	public Cliente buscar(String cpf) {
 		Cliente retorno = new Cliente();
 
         try {
         	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente where cpf = ?");
-        	stmt.setString(1, c.getCPF());
+        	stmt.setString(1, cpf);
         	
 	        ResultSet rs = stmt.executeQuery();
 		        
@@ -116,7 +116,7 @@ public class ClienteDAO {
 		return c;
 	}
 
-	public void delete(Cliente c) {
+	public void delete(String cpf) {
 		String sql = "delete from " + tabela + " where cpf = ?";
 
 		PreparedStatement stmt;
@@ -124,7 +124,7 @@ public class ClienteDAO {
 		try {
 			stmt = fc.getConnection().prepareStatement(sql);
 	
-			stmt.setString(1, c.getCPF());
+			stmt.setString(1, cpf);
 
 			stmt.execute();
 			stmt.close();
