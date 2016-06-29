@@ -5,12 +5,12 @@ import edu.ufu.poo2.si.model.Estoque;
 
 public class EmPreVenda implements EstadoEstoque {
 
-	public void faturar(Estoque estoque) {
+    public void faturar(Estoque estoque) {
 
-	}
+    }
 
-	public void reservar(Estoque estoque) {
+    public void reservar(Estoque estoque) {
 
-	}
+    }
 
 }

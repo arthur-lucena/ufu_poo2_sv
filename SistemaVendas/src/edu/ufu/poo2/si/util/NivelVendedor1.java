@@ -4,8 +4,8 @@ import edu.ufu.poo2.si.api.NivelVendedor;
 
 public class NivelVendedor1 implements NivelVendedor {
 
-	public void realizarVenda() {
+    public void realizarVenda() {
 
-	}
+    }
 
 }

@@ -1,137 +1,137 @@
 package edu.ufu.poo2.si.control;
 
+import edu.ufu.poo2.si.control.utils.FactoryConnection;
+import edu.ufu.poo2.si.model.Cliente;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ufu.poo2.si.control.utils.FactoryConnection;
-import edu.ufu.poo2.si.model.Cliente;
-
 public class ClienteDAO {
 
-	private FactoryConnection fc;
-	private String tabela = "cliente";
-	private String columns = "cpf, "
-			+ "nome_cliente";
+    private FactoryConnection fc;
+    private String tabela = "cliente";
+    private String columns = "cpf, "
+            + "nome_cliente";
 
-	public ClienteDAO() {
-		this.fc = FactoryConnection.getInstance();
-	}
+    public ClienteDAO() {
+        this.fc = FactoryConnection.getInstance();
+    }
 
-	public List<Cliente> buscarTodos() {
-		List<Cliente> retorno = new ArrayList<Cliente>();
-        
-        try {
-        	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente");
-        	
-	        ResultSet rs = stmt.executeQuery();
-	
-	        Cliente cliente;
-	        
-	        while (rs.next()) {
-	        	cliente = new Cliente();
-	        	cliente.setCPF(rs.getString("cpf"));
-	        	cliente.setNome(rs.getString("nome_cliente"));
-	
-	            retorno.add(cliente);
-	        }
-	        
-	        rs.close();
-	        stmt.close();
-        } catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return retorno;
-	}
-
-	public Cliente buscar(String cpf) {
-		Cliente retorno = new Cliente();
+    public List<Cliente> buscarTodos() {
+        List<Cliente> retorno = new ArrayList<>();
 
         try {
-        	PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente where cpf = ?");
-        	stmt.setString(1, cpf);
-        	
-	        ResultSet rs = stmt.executeQuery();
-		        
-	        if (rs.next()) {
-	        	retorno.setCPF(rs.getString("cpf"));
-	        	retorno.setNome(rs.getString("nome_cliente"));
-	        } else {
-	        	return null;
-	        }
-	        
-	        rs.close();
-	        stmt.close();
+            PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente");
+
+            ResultSet rs = stmt.executeQuery();
+
+            Cliente cliente;
+
+            while (rs.next()) {
+                cliente = new Cliente();
+                cliente.setCPF(rs.getString("cpf"));
+                cliente.setNome(rs.getString("nome_cliente"));
+
+                retorno.add(cliente);
+            }
+
+            rs.close();
+            stmt.close();
         } catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return retorno;
-	}
+            e.printStackTrace();
+        }
 
-	public Cliente insert(Cliente c) {
-		String sql = "insert into " + tabela + "(" + columns + ") " + "values (?,?)";
+        return retorno;
+    }
 
-		PreparedStatement stmt;
+    public Cliente buscar(String cpf) {
+        Cliente retorno = new Cliente();
 
-		try {
-			stmt = fc.getConnection().prepareStatement(sql);
+        try {
+            PreparedStatement stmt = fc.getConnection().prepareStatement("select * from cliente where cpf = ?");
+            stmt.setString(1, cpf);
 
-			stmt.setString(1, c.getCPF());
-			stmt.setString(2, c.getNome());
+            ResultSet rs = stmt.executeQuery();
 
-			stmt.execute();
-			stmt.close();
+            if (rs.next()) {
+                retorno.setCPF(rs.getString("cpf"));
+                retorno.setNome(rs.getString("nome_cliente"));
+            } else {
+                return null;
+            }
 
-			fc.getConnection().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-		return c;
-	}
+        return retorno;
+    }
 
-	public Cliente update(Cliente c) {
-		String sql = "update " + tabela + " set nome_cliente = ? where cpf = ?";
+    public Cliente insert(Cliente c) {
+        String sql = "insert into " + tabela + "(" + columns + ") " + "values (?,?)";
 
-		PreparedStatement stmt;
+        PreparedStatement stmt;
 
-		try {
-			stmt = fc.getConnection().prepareStatement(sql);
-	
-			stmt.setString(1, c.getNome());
-			stmt.setString(2, c.getCPF());
+        try {
+            stmt = fc.getConnection().prepareStatement(sql);
 
-			stmt.execute();
-			stmt.close();
+            stmt.setString(1, c.getCPF());
+            stmt.setString(2, c.getNome());
 
-			fc.getConnection().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+            stmt.execute();
+            stmt.close();
 
-		return c;
-	}
+            fc.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-	public void delete(String cpf) {
-		String sql = "delete from " + tabela + " where cpf = ?";
+        return c;
+    }
 
-		PreparedStatement stmt;
+    public Cliente update(Cliente c) {
+        String sql = "update " + tabela + " set nome_cliente = ? where cpf = ?";
 
-		try {
-			stmt = fc.getConnection().prepareStatement(sql);
-	
-			stmt.setString(1, cpf);
+        PreparedStatement stmt;
 
-			stmt.execute();
-			stmt.close();
+        try {
+            stmt = fc.getConnection().prepareStatement(sql);
 
-			fc.getConnection().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+            stmt.setString(1, c.getNome());
+            stmt.setString(2, c.getCPF());
+
+            stmt.execute();
+            stmt.close();
+
+            fc.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return c;
+    }
+
+    public void delete(String cpf) {
+        String sql = "delete from " + tabela + " where cpf = ?";
+
+        PreparedStatement stmt;
+
+        try {
+            stmt = fc.getConnection().prepareStatement(sql);
+
+            stmt.setString(1, cpf);
+
+            stmt.execute();
+            stmt.close();
+
+            fc.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
