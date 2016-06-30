@@ -23,8 +23,7 @@ public class Teste {
 	}
 	
 	public static void fechaVenda(Pedido pedido) throws ErroException, ValidacaoException {
-		
-		
+		verificarNivelVendedor(pedido);
 		// TODO validar pagamento
 		faturarPedido(pedido);
 	}
