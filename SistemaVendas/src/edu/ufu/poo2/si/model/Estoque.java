@@ -4,25 +4,35 @@ import edu.ufu.poo2.si.api.EstadoEstoque;
 
 public class Estoque {
 
-    private int quantidade;
+	private Long codigoEstoque;
+	
+    private Integer quantidade;
 
-    private int quantidadeReservada;
+    private Integer quantidadeReservada;
 
     private EstadoEstoque estadoEstoque;
 
-    public int getQuantidade() {
+    public Long getCodigoEstoque() {
+		return codigoEstoque;
+	}
+
+	public void setCodigoEstoque(Long codigoEstoque) {
+		this.codigoEstoque = codigoEstoque;
+	}
+
+	public Integer getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(Integer quantidade) {
         this.quantidade = quantidade;
     }
 
-    public int getQuantidadeReservada() {
+    public Integer getQuantidadeReservada() {
         return quantidadeReservada;
     }
 
-    public void setQuantidadeReservada(int quantidadeReservada) {
+    public void setQuantidadeReservada(Integer quantidadeReservada) {
         this.quantidadeReservada = quantidadeReservada;
     }
 
