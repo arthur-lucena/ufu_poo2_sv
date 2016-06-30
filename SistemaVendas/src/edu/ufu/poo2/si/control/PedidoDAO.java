@@ -10,171 +10,165 @@ import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.ItemPedido;
 import edu.ufu.poo2.si.model.Pedido;
 import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
 
 public class PedidoDAO {
 
-    private FactoryConnection fc;
-    private String tabela = "pedido";
-    private String columnPk = "codigo_pedido ";
-    private String columns = "forma_pagamento, "
-            + "valor_total, "
-            + "vendedor_cpf, "
-            + "cliente_cpf ";
+	private FactoryConnection fc;
+	private String tabela = "pedido";
+	private String columnPk = "codigo_pedido ";
+	private String columns = "forma_pagamento, " + "valor_total, " + "vendedor_cpf, " + "cliente_cpf ";
 
-    public PedidoDAO() {
-        this.fc = FactoryConnection.getInstance();
-    }
+	public PedidoDAO() {
+		this.fc = FactoryConnection.getInstance();
+	}
 
-    public List<Pedido> buscarTodos() {
-        List<Pedido> retorno = new ArrayList<>();
+	public List<Pedido> buscarTodos() throws ErroException {
+		List<Pedido> retorno = new ArrayList<>();
 
-        try {
-            PreparedStatement stmt = fc.getConnection().prepareStatement("select * from " + tabela);
+		try {
+			PreparedStatement stmt = fc.getConnection().prepareStatement("select * from " + tabela);
 
-            ResultSet rs = stmt.executeQuery();
+			ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                retorno.add(montaPedido(rs));
-            }
+			while (rs.next()) {
+				retorno.add(montaPedido(rs));
+			}
 
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao buscar todos os pedidos!", e);
+		}
 
-        return retorno;
-    }
+		return retorno;
+	}
 
-    public Pedido buscar(Long codigoPedido) {
-        Pedido retorno = new Pedido();
-        
-        String sql = "select * from " + tabela + " where " + columnPk + " = ?";
+	public Pedido buscar(Long codigoPedido) throws ErroException {
+		Pedido retorno = new Pedido();
 
-        try {
-            PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
-            stmt.setLong(1, codigoPedido);
+		String sql = "select * from " + tabela + " where " + columnPk + " = ?";
 
-            ResultSet rs = stmt.executeQuery();
+		try {
+			PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
+			stmt.setLong(1, codigoPedido);
 
-            if (rs.next()) {
-                retorno = montaPedido(rs);
-            } else {
-                return null;
-            }
+			ResultSet rs = stmt.executeQuery();
 
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			if (rs.next()) {
+				retorno = montaPedido(rs);
+			} else {
+				return null;
+			}
 
-        return retorno;
-    }
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao buscar todos os Pedido!", e);
+		}
 
-    public Pedido insert(Pedido p) {
-        String sql = "insert into "
-                + tabela
-                + "(" + columnPk
-                + ", " + columns
-                + ") " + "values (?,?,?,?,?)";
+		return retorno;
+	}
 
-        p.setCodigoPedido(getNextPkPedido());
+	public Pedido insert(Pedido p) throws ErroException {
+		String sql = "insert into " + tabela + "(" + columnPk + ", " + columns + ") " + "values (?,?,?,?,?)";
 
-        PreparedStatement stmt;
-        try {
-            stmt = fc.getConnection().prepareStatement(sql);
+		p.setCodigoPedido(getNextPkPedido());
 
-            stmt.setLong(1, p.getCodigoPedido());
-            stmt.setInt(2, p.getFormaPagamento().ordinal());
-            stmt.setBigDecimal(3, p.getValorTotal());
-            stmt.setString(4, p.getVendedor().getCPF());
-            stmt.setString(5, p.getCliente().getCPF());
+		PreparedStatement stmt;
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
 
-            stmt.execute();
-            stmt.close();
+			stmt.setLong(1, p.getCodigoPedido());
+			stmt.setInt(2, p.getFormaPagamento().ordinal());
+			stmt.setBigDecimal(3, p.getValorTotal());
+			stmt.setString(4, p.getVendedor().getCPF());
+			stmt.setString(5, p.getCliente().getCPF());
 
-            fc.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        //GRAVAR ITENS
-        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
-        for (ItemPedido ip : p.getItens()) {
-        	ip.setCodigoPedido(p.getCodigoPedido());
-        	itemPedidoDAO.insert(ip);
-        }
+			stmt.execute();
+			stmt.close();
 
-        return p;
-    }
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao grava pedido! " + p, e);
+		}
 
-    public void delete(Long codigoPedido) {
-        String sql = "delete from " + tabela + " where " + columnPk + " = ?";
+		// GRAVAR ITENS
+		ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+		for (ItemPedido ip : p.getItens()) {
+			ip.setCodigoPedido(p.getCodigoPedido());
+			itemPedidoDAO.insert(ip);
+		}
 
-        PreparedStatement stmt;
+		return p;
+	}
 
-        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
-        itemPedidoDAO.deletePorPedido(codigoPedido);
-        
-        try {
-            stmt = fc.getConnection().prepareStatement(sql);
+	public void delete(Long codigoPedido) throws ErroException {
+		String sql = "delete from " + tabela + " where " + columnPk + " = ?";
 
-            stmt.setLong(1, codigoPedido);
-            
-            stmt.execute();
-            stmt.close();
+		PreparedStatement stmt;
 
-            fc.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+		ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+		itemPedidoDAO.deletePorPedido(codigoPedido);
 
-    private Long getNextPkPedido() {
-        Long retorno = null;
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
 
-        try {
-            String sql = "select max(" + columnPk + ") as last from " + tabela;
+			stmt.setLong(1, codigoPedido);
 
-            PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
+			stmt.execute();
+			stmt.close();
 
-            ResultSet rs = stmt.executeQuery();
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao deletar pedido " + codigoPedido + "!", e);
+		}
+	}
 
-            if (rs.next()) {
-                retorno = rs.getLong("last");
-            }
+	private Long getNextPkPedido() {
+		Long retorno = null;
 
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+		try {
+			String sql = "select max(" + columnPk + ") as last from " + tabela;
 
-        if (retorno == null || retorno.equals(0L)) {
-            return 1L;
-        }
+			PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
 
-        return retorno + 1L;
-    }
+			ResultSet rs = stmt.executeQuery();
 
-    private Pedido montaPedido(ResultSet rs) throws SQLException {
-        Pedido retorno = new Pedido();
+			if (rs.next()) {
+				retorno = rs.getLong("last");
+			}
 
-        retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
-        retorno.setFormaPagamento(EnumFormaPagamento.getFormaPagamento(rs.getInt("forma_pagamento")));
-        retorno.setValorTotal(rs.getBigDecimal("valor_total"));
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        ClienteDAO daoCliente = new ClienteDAO();
-        retorno.setCliente(daoCliente.buscar(rs.getString("cliente_cpf")));
+		if (retorno == null || retorno.equals(0L)) {
+			return 1L;
+		}
 
-        VendedorDAO daoVendedor = new VendedorDAO();
-        retorno.setVendedor(daoVendedor.buscar(rs.getString("vendedor_cpf")));
+		return retorno + 1L;
+	}
 
-        //CARREGAR ITENS
-        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
-        retorno.setItens(itemPedidoDAO.buscarPorPedido(retorno.getCodigoPedido()));
+	private Pedido montaPedido(ResultSet rs) throws SQLException, ErroException {
+		Pedido retorno = new Pedido();
 
-        return retorno;
-    }
+		retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
+		retorno.setFormaPagamento(EnumFormaPagamento.getFormaPagamento(rs.getInt("forma_pagamento")));
+		retorno.setValorTotal(rs.getBigDecimal("valor_total"));
+
+		ClienteDAO daoCliente = new ClienteDAO();
+		retorno.setCliente(daoCliente.buscar(rs.getString("cliente_cpf")));
+
+		VendedorDAO daoVendedor = new VendedorDAO();
+		retorno.setVendedor(daoVendedor.buscar(rs.getString("vendedor_cpf")));
+
+		// CARREGAR ITENS
+		ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+		retorno.setItens(itemPedidoDAO.buscarPorPedido(retorno.getCodigoPedido()));
+
+		return retorno;
+	}
 }

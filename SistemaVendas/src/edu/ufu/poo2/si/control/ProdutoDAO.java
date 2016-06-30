@@ -8,6 +8,7 @@ import java.util.List;
 
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.Produto;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
 
 public class ProdutoDAO {
 
@@ -20,7 +21,7 @@ public class ProdutoDAO {
 		this.fc = FactoryConnection.getInstance();
 	}
 
-	public List<Produto> buscarTodos() {
+	public List<Produto> buscarTodos() throws ErroException {
 		List<Produto> retorno = new ArrayList<>();
 
 		try {
@@ -35,13 +36,13 @@ public class ProdutoDAO {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao buscar todos os produto!", e);
 		}
 
 		return retorno;
 	}
 
-	public Produto buscar(Long codigoProduto) {
+	public Produto buscar(Long codigoProduto) throws ErroException {
 		Produto retorno = new Produto();
 
 		String sql = "select * from " + tabela + " where " + columnPk + " = ?";
@@ -61,13 +62,13 @@ public class ProdutoDAO {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao buscar produto " + codigoProduto + "!", e);
 		}
 
 		return retorno;
 	}
 
-	public Produto insert(Produto p) {
+	public Produto insert(Produto p) throws ErroException {
 		String sql = "insert into " + tabela + "(" + columnPk + ", " + columns + ") " + "values (?,?,?,?)";
 
 		p.setCodigoProduto(getNextPkProduto());
@@ -76,7 +77,7 @@ public class ProdutoDAO {
 		try {
 			EstoqueDAO estoqueDAO = new EstoqueDAO();
 			p.setEstoque(estoqueDAO.insert(p.getEstoque()));
-			
+
 			stmt = fc.getConnection().prepareStatement(sql);
 
 			stmt.setLong(1, p.getCodigoProduto());
@@ -89,13 +90,13 @@ public class ProdutoDAO {
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao inserir produto! " + p, e);
 		}
 
 		return p;
 	}
 
-	public Produto update(Produto p) {
+	public Produto update(Produto p) throws ErroException {
 		String sql = "update " + tabela + " set nome_produto = ?, preco = ? where " + columnPk + " = ?";
 
 		PreparedStatement stmt;
@@ -109,25 +110,25 @@ public class ProdutoDAO {
 
 			stmt.execute();
 			stmt.close();
-			
+
 			// atualizando estoque
 			EstoqueDAO estoqueDAO = new EstoqueDAO();
 			estoqueDAO.update(p.getEstoque());
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao atualizar produto! " + p, e);
 		}
 
 		return p;
 	}
 
-	public void delete(Long codigoProduto) {
+	public void delete(Long codigoProduto) throws ErroException {
 		String sql = "delete from " + tabela + " where " + columnPk + " = ?";
 
 		PreparedStatement stmt;
 		Produto produto = buscar(codigoProduto);
-		
+
 		try {
 			stmt = fc.getConnection().prepareStatement(sql);
 
@@ -138,9 +139,9 @@ public class ProdutoDAO {
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao deletar produto " + codigoProduto + "!", e);
 		}
-		
+
 		if (produto != null) {
 			EstoqueDAO estoqueDAO = new EstoqueDAO();
 			estoqueDAO.delete(produto.getEstoque().getCodigoEstoque());
@@ -174,16 +175,15 @@ public class ProdutoDAO {
 		return retorno + 1L;
 	}
 
-	private Produto montaProduto(ResultSet rs) throws SQLException {
+	private Produto montaProduto(ResultSet rs) throws SQLException, ErroException {
 		EstoqueDAO estoqueDAO = new EstoqueDAO();
-		
+
 		Produto retorno = new Produto();
 
 		retorno.setCodigoProduto(rs.getLong("codigo_Produto"));
 		retorno.setNomeProduto(rs.getString("nome_produto"));
 		retorno.setPreco(rs.getBigDecimal("preco"));
 		retorno.setEstoque(estoqueDAO.buscar(rs.getLong("codigo_estoque")));
-		// TODO carregar estoque
 
 		return retorno;
 	}

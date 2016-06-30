@@ -8,97 +8,92 @@ import java.util.List;
 
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.ItemPedido;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
 
 public class ItemPedidoDAO {
 
-    private FactoryConnection fc;
-    private String tabela = "item_pedido";
-    private String columns = "qtd, "
-            + "valor, "
-            + "codigo_pedido, "
-            + "codigo_produto ";
+	private FactoryConnection fc;
+	private String tabela = "item_pedido";
+	private String columns = "qtd, " + "valor, " + "codigo_pedido, " + "codigo_produto ";
 
-    public ItemPedidoDAO() {
-        this.fc = FactoryConnection.getInstance();
-    }
+	public ItemPedidoDAO() {
+		this.fc = FactoryConnection.getInstance();
+	}
 
-    public List<ItemPedido> buscarPorPedido(Long codigoPedido) {
-        List<ItemPedido> retorno = new ArrayList<>();
-        
-        String sql = "select * from " + tabela + " where codigo_pedido = ?";
+	public List<ItemPedido> buscarPorPedido(Long codigoPedido) throws ErroException {
+		List<ItemPedido> retorno = new ArrayList<>();
 
-        try {
-            PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
-            stmt.setLong(1, codigoPedido);
+		String sql = "select * from " + tabela + " where codigo_pedido = ?";
 
-            ResultSet rs = stmt.executeQuery();
+		try {
+			PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
+			stmt.setLong(1, codigoPedido);
 
-            while (rs.next()) {
-                retorno.add(montaItemPedido(rs));
-            }
+			ResultSet rs = stmt.executeQuery();
 
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			while (rs.next()) {
+				retorno.add(montaItemPedido(rs));
+			}
 
-        return retorno;
-    }
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao buscar item pedido do pedido " + codigoPedido + "!", e);
+		}
 
-    public ItemPedido insert(ItemPedido ip) {
-        String sql = "insert into "
-                + tabela
-                + "(" + columns
-                + ") " + "values (?,?,?,?)";
+		return retorno;
+	}
 
-        PreparedStatement stmt;
-        try {
-            stmt = fc.getConnection().prepareStatement(sql);
+	public ItemPedido insert(ItemPedido ip) throws ErroException {
+		String sql = "insert into " + tabela + "(" + columns + ") " + "values (?,?,?,?)";
 
-            stmt.setInt(1, ip.getQuantidade());
-            stmt.setBigDecimal(2, ip.getValor());
-            stmt.setLong(3, ip.getCodigoPedido());
-            stmt.setLong(4, ip.getCodigoProduto());
+		PreparedStatement stmt;
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
 
-            stmt.execute();
-            stmt.close();
+			stmt.setInt(1, ip.getQuantidade());
+			stmt.setBigDecimal(2, ip.getValor());
+			stmt.setLong(3, ip.getCodigoPedido());
+			stmt.setLong(4, ip.getCodigoProduto());
 
-            fc.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			stmt.execute();
+			stmt.close();
 
-        return ip;
-    }
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao inserir item pedido! " + ip, e);
+		}
 
-    public void deletePorPedido(Long codigoPedido) {
-        String sql = "delete from " + tabela + " where codigo_pedido = ?";
+		return ip;
+	}
 
-        PreparedStatement stmt;
+	public void deletePorPedido(Long codigoPedido) throws ErroException {
+		String sql = "delete from " + tabela + " where codigo_pedido = ?";
 
-        try {
-            stmt = fc.getConnection().prepareStatement(sql);
+		PreparedStatement stmt;
 
-            stmt.setLong(1, codigoPedido);
+		try {
+			stmt = fc.getConnection().prepareStatement(sql);
 
-            stmt.execute();
-            stmt.close();
+			stmt.setLong(1, codigoPedido);
 
-            fc.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+			stmt.execute();
+			stmt.close();
 
-    private ItemPedido montaItemPedido(ResultSet rs) throws SQLException {
-        ItemPedido retorno = new ItemPedido();
+			fc.getConnection().close();
+		} catch (SQLException e) {
+			throw new ErroException("Falha ao deletar item pedido do pedido " + codigoPedido + "!", e);
+		}
+	}
 
-        retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
-        retorno.setCodigoProduto(rs.getLong("codigo_produto"));
-        retorno.setQuantidade(rs.getInt("qtd"));
-        retorno.setValor(rs.getBigDecimal("valor"));
+	private ItemPedido montaItemPedido(ResultSet rs) throws SQLException {
+		ItemPedido retorno = new ItemPedido();
 
-        return retorno;
-    }
+		retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
+		retorno.setCodigoProduto(rs.getLong("codigo_produto"));
+		retorno.setQuantidade(rs.getInt("qtd"));
+		retorno.setValor(rs.getBigDecimal("valor"));
+
+		return retorno;
+	}
 }
