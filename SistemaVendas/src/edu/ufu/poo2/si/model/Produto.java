@@ -12,6 +12,15 @@ public class Produto {
 
     private Estoque estoque;
     
+    public Produto() {}
+    
+    public Produto(Produto produto) {
+    	codigoProduto = produto.codigoProduto;
+    	nomeProduto = produto.nomeProduto;
+    	preco = produto.preco;
+    	estoque = new Estoque(produto.estoque);
+    }
+    
     public Long getCodigoProduto() {
 		return codigoProduto;
 	}

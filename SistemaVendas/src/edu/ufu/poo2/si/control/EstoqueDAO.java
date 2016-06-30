@@ -95,7 +95,7 @@ public class EstoqueDAO {
 	}
 
 	public Estoque update(Estoque p) throws ErroException {
-		String sql = "update " + tabela + " set qtd = ?, qtd_reserva = ?, estado_estoque where " + columnPk + " = ?";
+		String sql = "update " + tabela + " set qtd = ?, qtd_reservada = ?, estado_estoque = ? where " + columnPk + " = ?";
 
 		PreparedStatement stmt;
 
