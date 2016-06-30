@@ -2,6 +2,7 @@ package edu.ufu.poo2.si.util.estadoEstoque;
 
 import edu.ufu.poo2.si.api.EstadoEstoque;
 import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
+import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 public class EmPreVenda extends EstadoEstoque {
 
@@ -20,7 +21,7 @@ public class EmPreVenda extends EstadoEstoque {
 		this.verificarEstado();
 	}
 
-	public void faturar(int quantidade) {
+	public void faturar(int quantidade) throws ValidacaoException {
 		estoque.setQuantidadeReservada(estoque.getQuantidadeReservada() + quantidade);
 		System.out.println("O produto faturado em prevenda");
 		this.verificarEstado();

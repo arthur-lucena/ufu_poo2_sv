@@ -11,11 +11,18 @@ package edu.ufu.poo2.si.telas.estoque;
  */
 public class CadastroProduto extends javax.swing.JFrame {
 
+    private Boolean editando;
+
     /**
      * Creates new form CadastroProduto
      */
     public CadastroProduto() {
         initComponents();
+    }
+
+    public CadastroProduto(Boolean editando) {
+        this();
+        this.editando = editando;
     }
 
     /**

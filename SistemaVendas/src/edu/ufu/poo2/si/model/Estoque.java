@@ -1,6 +1,7 @@
 package edu.ufu.poo2.si.model;
 
 import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
+import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 public class Estoque {
 
@@ -48,7 +49,7 @@ public class Estoque {
 		estadoEstoque.getStateClass(this).adicionar(quantidade);
 	}
 
-	public void faturar(int quantidade) {
+	public void faturar(int quantidade) throws ValidacaoException {
 		estadoEstoque.getStateClass(this).faturar(quantidade);
 	}
 }

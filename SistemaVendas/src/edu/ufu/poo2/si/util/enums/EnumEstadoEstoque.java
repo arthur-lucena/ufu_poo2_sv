@@ -17,7 +17,7 @@ public enum EnumEstadoEstoque {
     	this.estadoEstoque = estadoEstoque;
     }
 
-    public static EnumEstadoEstoque getNivel(Integer numero) {
+    public static EnumEstadoEstoque getEstadoEstoque(Integer numero) {
         for (EnumEstadoEstoque factory : values()) {
             if (numero.equals(factory.ordinal())) {
                 return factory;

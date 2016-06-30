@@ -11,11 +11,18 @@ package edu.ufu.poo2.si.telas.pedido;
  */
 public class CadastroPedido extends javax.swing.JFrame {
 
+    private Boolean editando;
+
     /**
      * Creates new form CadastroPedido
      */
     public CadastroPedido() {
         initComponents();
+    }
+
+    public CadastroPedido(Boolean editando) {
+        this();
+        this.editando = editando;
     }
 
     /**
