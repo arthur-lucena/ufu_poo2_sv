@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import edu.ufu.poo2.si.model.Cliente;
 import edu.ufu.poo2.si.model.Estoque;
+import edu.ufu.poo2.si.model.ItemPedido;
 import edu.ufu.poo2.si.model.Pedido;
 import edu.ufu.poo2.si.model.Produto;
 import edu.ufu.poo2.si.model.Vendedor;
@@ -14,7 +15,7 @@ import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
 public class Teste {
 
     public static void main(String[] args) {
-    	testeProduto();
+    	testePedido();
     }
 
     public static void testeCliente() {
@@ -76,21 +77,28 @@ public class Teste {
     }
     
     public static void testePedido() {
-    	VendedorDAO vendedorDao = new VendedorDAO();
-    	ClienteDAO clienteDao = new ClienteDAO();
-    	PedidoDAO pedidoDao = new PedidoDAO();
+    	VendedorDAO vendedorDAO = new VendedorDAO();
+    	ClienteDAO clienteDAO = new ClienteDAO();
+    	PedidoDAO pedidoDAO = new PedidoDAO();
     	
-    	pedidoDao.delete(1l);
+    	pedidoDAO.delete(1l);
     	
     	Pedido p = new Pedido();
     	p.setFormaPagamento(EnumFormaPagamento.Dinheiro);
     	p.setValorTotal(new BigDecimal(120.5));
-    	p.setCliente(clienteDao.buscar("09052671680"));
-    	p.setVendedor(vendedorDao.buscar("09052671681"));
+    	p.setCliente(clienteDAO.buscar("09052671680"));
+    	p.setVendedor(vendedorDAO.buscar("09052671681"));
     	
-    	pedidoDao.insert(p);
+    	ItemPedido ip = new ItemPedido();
+    	ip.setQuantidade(1);
+    	ip.setValor(new BigDecimal(13213.5));
+    	ip.setCodigoProduto(1l);
     	
-    	for (Pedido pd : pedidoDao.buscarTodos()) {
+    	p.getItens().add(ip);
+    	
+    	pedidoDAO.insert(p);
+    	
+    	for (Pedido pd : pedidoDAO.buscarTodos()) {
     		System.out.println(pd);
     	}
     }
