@@ -1,6 +1,7 @@
 package edu.ufu.poo2.si.control;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,41 +19,62 @@ import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 public class Teste {
 
-	public static void main(String[] args) {	
+	public static void main(String[] args) {
+		// testeProduto();
 		testePedido();
+
+		// PedidoDAO pedidoDAO = new PedidoDAO();
+		//
+		// try {
+		// for (Pedido pe : pedidoDAO.buscarTodos()) {
+		// System.out.println(pe);
+		// }
+		// } catch (ErroException e) {
+		// e.printStackTrace();
+		// }
 	}
-	
+
 	public static void fechaVenda(Pedido pedido) throws ErroException, ValidacaoException {
+		avaliaDescontoDosItensPedido(pedido);		
 		verificarNivelVendedor(pedido);
 		// TODO validar pagamento
 		faturarPedido(pedido);
 	}
 	
+	public static void avaliaDescontoDosItensPedido(Pedido pedido) {
+		for (ItemPedido ip : pedido.getItens()) {
+			BigDecimal desconto = ip.getValor().multiply(BigDecimal.valueOf(100));
+			desconto = desconto.divide(ip.getProduto().getPreco(), 2, RoundingMode.HALF_UP);
+			
+			ip.setDesconto(100-desconto.intValue());
+		}
+	}
+
 	/**
 	 * Valida o desconto do nivel de desconto que o vendedor pode dar
+	 * 
 	 * @param pedido
 	 * @throws ValidacaoException
 	 */
 	public static void verificarNivelVendedor(Pedido pedido) throws ValidacaoException {
 		for (ItemPedido ip : pedido.getItens()) {
 			EnumNivelVendedor nivelVendedor = pedido.getVendedor().getNivel();
-			
+
 			nivelVendedor.getCommandClass().validarDesconto(ip);
-			
+
 			if (!ip.getNivelVendedoLibera().equals(nivelVendedor)) {
-				String msg = "Para liberar o desconto do produto "
-						+ ip.getProduto().getCodigoProduto()
-						+ " é necessário que o vendedor seja nível "
-						+ ip.getNivelVendedoLibera().name()
+				String msg = "Para liberar o desconto do produto " + ip.getProduto().getCodigoProduto()
+						+ " é necessário que o vendedor seja nível " + ip.getNivelVendedoLibera().name()
 						+ "! Favor abaixar o desconto ou mudar de vendedor.";
-				
+
 				throw new ValidacaoException(msg);
 			}
 		}
 	}
-	
+
 	/**
 	 * Processo de faturamento de pedido atomico
+	 * 
 	 * @param pedido
 	 * @throws ErroException
 	 * @throws ValidacaoException
@@ -60,19 +82,20 @@ public class Teste {
 	public static void faturarPedido(Pedido pedido) throws ErroException, ValidacaoException {
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 		List<Produto> produtosASeremFaturadosRollBack = new ArrayList<Produto>();
-		
+
 		try {
-			// carregando os produto que seram faturados com informações atualizadas
+			// carregando os produto que seram faturados com informações
+			// atualizadas
 			for (ItemPedido ip : pedido.getItens()) {
 				ip.setProduto((produtoDAO.buscar(ip.getProduto().getCodigoProduto())));
 			}
 		} catch (ErroException e) {
 			throw new ErroException("Falha ao carregar produtos a serem faturados", e);
 		}
-		
+
 		// clonando objetos
 		for (ItemPedido ip : pedido.getItens()) {
-			produtosASeremFaturadosRollBack.add( new Produto(ip.getProduto()));
+			produtosASeremFaturadosRollBack.add(new Produto(ip.getProduto()));
 		}
 
 		try {
@@ -81,32 +104,34 @@ public class Teste {
 				ip.getProduto().getEstoque().faturar(ip.getQuantidade());
 				produtoDAO.update(ip.getProduto());
 			}
-			
+
 			gravarPedido(pedido);
 		} catch (ValidacaoException e) {
-			// caso não seja possivel faturar deve se efetuar o rollback do outros produto
+			// caso não seja possivel faturar deve se efetuar o rollback do
+			// outros produto
 			// voltando a quantidade anterior antes de serem faturados
 			for (Produto p : produtosASeremFaturadosRollBack) {
 				produtoDAO.update(p);
 			}
-			
+
 			throw e;
 		} catch (Exception e) {
-			// caso não seja possivel faturar deve se efetuar o rollback do outros produto
+			// caso não seja possivel faturar deve se efetuar o rollback do
+			// outros produto
 			// voltando a quantidade anterior antes de serem faturados
 			for (Produto p : produtosASeremFaturadosRollBack) {
 				produtoDAO.update(p);
 			}
-			
+
 			throw e;
 		}
 	}
-	
+
 	public static void gravarPedido(Pedido pedido) throws ErroException {
 		PedidoDAO pedidoDAO = new PedidoDAO();
 		pedidoDAO.insert(pedido);
 	}
-	
+
 	public static void cargaDeCliente() {
 		ClienteDAO dao = new ClienteDAO();
 
@@ -153,7 +178,7 @@ public class Teste {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void cargaDeProduto() {
 		ProdutoDAO dao = new ProdutoDAO();
 
@@ -163,16 +188,16 @@ public class Teste {
 			for (int i = 0; i < 50; i++) {
 				produto = new Produto();
 				estoque = new Estoque();
-				
+
 				produto.setNomeProduto("Produto " + i);
 				produto.setPreco(new BigDecimal((Math.random() * 1000) / 7));
-				
+
 				estoque.setQuantidade(Long.valueOf(Math.round((Math.random() * 100))).intValue());
 				estoque.setQuantidadeReservada(0);
 				estoque.setEstadoEstoque(EnumEstadoEstoque.EmEstoque);
-				
+
 				produto.setEstoque(estoque);
-				
+
 				dao.insert(produto);
 			}
 
@@ -264,14 +289,15 @@ public class Teste {
 		try {
 			Pedido p = new Pedido();
 			p.setFormaPagamento(EnumFormaPagamento.Dinheiro);
-			p.setValorTotal(new BigDecimal(120.5));
 			p.setCliente(clienteDAO.buscar("02172030945"));
 			p.setVendedor(vendedorDAO.buscar("03587339872"));
 
 			ItemPedido ip = new ItemPedido();
 			ip.setQuantidade(1);
-			ip.setValor(new BigDecimal(40.5));
+			ip.setValor(new BigDecimal(82));
 			ip.setProduto(produtoDAO.buscar(8l));
+
+			p.setValorTotal(ip.getValor().multiply(BigDecimal.valueOf(ip.getQuantidade())));
 
 			p.getItens().add(ip);
 
@@ -283,31 +309,16 @@ public class Teste {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void testeProduto() {
-		Produto produto = new Produto();
-		produto.setNomeProduto("Ferrari");
-		produto.setPreco(new BigDecimal(1100010.5));
-
-		Estoque estoque = new Estoque();
-		estoque.setQuantidade(2);
-		estoque.setQuantidadeReservada(0);
-		estoque.setEstadoEstoque(EnumEstadoEstoque.EmEstoque);
-
-		produto.setEstoque(estoque);
+		ProdutoDAO produtoDAO = new ProdutoDAO();
+		Produto produto;
 
 		try {
-			ProdutoDAO dao = new ProdutoDAO();
-			dao.delete(1l);
-			dao.insert(produto);
-
-			for (Produto pr : dao.buscarTodos()) {
-				System.out.println(pr);
-			}
-
+			produto = produtoDAO.buscar(8l);
+			produto.getEstoque().adicionar(3);
+			produtoDAO.update(produto);
 		} catch (ErroException e) {
-			System.out.println(e.getMessage());
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
