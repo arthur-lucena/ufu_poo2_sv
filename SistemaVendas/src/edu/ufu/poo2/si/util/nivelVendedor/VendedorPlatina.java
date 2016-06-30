@@ -11,7 +11,7 @@ public class VendedorPlatina implements NivelVendedor {
 
 	public void validarDesconto(ItemPedido ip) throws ValidacaoException {
 		if (ip.getDesconto() > 15) {
-			throw new ValidacaoException("O desconto não é possível liberar uma compra com 15% de desconto!");
+			throw new ValidacaoException("Não é possível liberar uma compra com mais 15% de desconto!");
 		} else {
 			ip.setNivelVendedoLibera(EnumNivelVendedor.Platina);
 		}

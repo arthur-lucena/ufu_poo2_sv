@@ -69,6 +69,7 @@ public class ItemPedido {
 	@Override
 	public String toString() {
 		return "ItemPedido [codigoPedido=" + codigoPedido + ", valor=" + valor + ", desconto=" + desconto
-				+ ", quantidade=" + quantidade + ", produto=" + produto + "]";
+				+ ", quantidade=" + quantidade + ", produto=" + produto + ", nivelVendedoLibera=" + nivelVendedoLibera
+				+ "]";
 	}
 }
