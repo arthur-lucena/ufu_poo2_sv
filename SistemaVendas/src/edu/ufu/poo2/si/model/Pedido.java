@@ -1,10 +1,10 @@
 package edu.ufu.poo2.si.model;
 
-import edu.ufu.poo2.si.util.EnumFormaPagamento;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 
 public class Pedido {
 

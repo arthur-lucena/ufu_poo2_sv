@@ -2,7 +2,7 @@ package edu.ufu.poo2.si.control;
 
 import edu.ufu.poo2.si.model.Cliente;
 import edu.ufu.poo2.si.model.Vendedor;
-import edu.ufu.poo2.si.util.EnumNivelVendedor;
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
 
 public class Teste {
 

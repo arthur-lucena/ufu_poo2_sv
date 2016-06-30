@@ -1,4 +1,4 @@
-package edu.ufu.poo2.si.util;
+package edu.ufu.poo2.si.util.formaPagamento;
 
 import edu.ufu.poo2.si.api.FormaPagamento;
 
