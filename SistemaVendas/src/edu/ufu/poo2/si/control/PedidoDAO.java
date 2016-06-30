@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
+import edu.ufu.poo2.si.model.ItemPedido;
 import edu.ufu.poo2.si.model.Pedido;
 import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 
@@ -90,14 +91,19 @@ public class PedidoDAO {
             stmt.setString(4, p.getVendedor().getCPF());
             stmt.setString(5, p.getCliente().getCPF());
 
-            //TODO GRAVAR ITENS
-
             stmt.execute();
             stmt.close();
 
             fc.getConnection().close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        
+        //GRAVAR ITENS
+        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+        for (ItemPedido ip : p.getItens()) {
+        	ip.setCodigoPedido(p.getCodigoPedido());
+        	itemPedidoDAO.insert(ip);
         }
 
         return p;
@@ -108,11 +114,14 @@ public class PedidoDAO {
 
         PreparedStatement stmt;
 
+        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+        itemPedidoDAO.deletePorPedido(codigoPedido);
+        
         try {
             stmt = fc.getConnection().prepareStatement(sql);
 
             stmt.setLong(1, codigoPedido);
-
+            
             stmt.execute();
             stmt.close();
 
@@ -162,7 +171,9 @@ public class PedidoDAO {
         VendedorDAO daoVendedor = new VendedorDAO();
         retorno.setVendedor(daoVendedor.buscar(rs.getString("vendedor_cpf")));
 
-        //TODO CARREGAR ITENS
+        //CARREGAR ITENS
+        ItemPedidoDAO itemPedidoDAO = new ItemPedidoDAO();
+        retorno.setItens(itemPedidoDAO.buscarPorPedido(retorno.getCodigoPedido()));
 
         return retorno;
     }

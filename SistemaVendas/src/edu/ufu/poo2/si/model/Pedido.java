@@ -9,7 +9,7 @@ import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 public class Pedido {
 	private Long codigoPedido;
 
-    private List<ItemVenda> itens;
+    private List<ItemPedido> itens;
 
     private Vendedor vendedor;
 
@@ -27,14 +27,14 @@ public class Pedido {
         this.codigoPedido = codigoPedido;
     }
 
-    public List<ItemVenda> getItens() {
+    public List<ItemPedido> getItens() {
         if (itens == null)
-            return new ArrayList<>();
+            itens = new ArrayList<ItemPedido>();
 
         return itens;
     }
 
-    public void setItens(List<ItemVenda> itens) {
+    public void setItens(List<ItemPedido> itens) {
         this.itens = itens;
     }
 
