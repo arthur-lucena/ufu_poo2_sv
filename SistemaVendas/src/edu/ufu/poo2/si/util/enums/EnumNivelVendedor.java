@@ -1,8 +1,17 @@
 package edu.ufu.poo2.si.util.enums;
 
 public enum EnumNivelVendedor {
-    Prata,
-    Ouro;
+    Prata(new VendedorPrata()),
+    Ouro(new VendedorOuro()),
+    Prata.setSucessor(Ouro);
+    
+    private NivelVendedor nivelVendedor;
+    
+    
+    public EnumNivelVendedor (NivelVendedor nivelVendedor){
+        this.nivelVendedor = nivelVendedor;
+
+    }
 
     public static EnumNivelVendedor getNivel(Integer numero) {
         for (EnumNivelVendedor factory : values()) {
@@ -13,4 +22,6 @@ public enum EnumNivelVendedor {
 
         return null;
     }
+    
+    
 }

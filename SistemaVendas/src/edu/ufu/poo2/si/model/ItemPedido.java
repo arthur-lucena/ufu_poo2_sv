@@ -9,6 +9,8 @@ public class ItemPedido {
 	private Long codigoProduto;
 
     private BigDecimal valor;
+    
+    private int desconto;
 
     private int quantidade;
 
@@ -35,7 +37,15 @@ public class ItemPedido {
     public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
+	
+	public int getDesconto() {
+        return desconto;
+    }
 
+    public void setDesconto(int quantidade) {
+        this.desconto = desconto;
+    }
+	
     public int getQuantidade() {
         return quantidade;
     }
@@ -47,6 +57,6 @@ public class ItemPedido {
 	@Override
 	public String toString() {
 		return "ItemPedido [codigoPedido=" + codigoPedido + ", codigoProduto=" + codigoProduto + ", valor=" + valor
-				+ ", quantidade=" + quantidade + "]";
+				+ ", quantidade=" + quantidade +", desconto="+ desconto+"%"+"]";
 	}
 }
