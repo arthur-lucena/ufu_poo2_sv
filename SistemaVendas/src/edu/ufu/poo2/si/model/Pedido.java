@@ -7,8 +7,7 @@ import java.util.List;
 import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 
 public class Pedido {
-
-    private Long codigoPedido;
+	private Long codigoPedido;
 
     private List<ItemVenda> itens;
 
@@ -70,4 +69,10 @@ public class Pedido {
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
+    
+    @Override
+	public String toString() {
+		return "Pedido [codigoPedido=" + codigoPedido + ", itens=" + itens + ", vendedor=" + vendedor + ", cliente="
+				+ cliente + ", formaPagamento=" + formaPagamento + ", valorTotal=" + valorTotal + "]";
+	}
 }

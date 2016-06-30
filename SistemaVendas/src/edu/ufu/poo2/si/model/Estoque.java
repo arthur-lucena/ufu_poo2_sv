@@ -52,4 +52,10 @@ public class Estoque {
 	public void faturar(int quantidade) throws ValidacaoException {
 		estadoEstoque.getStateClass(this).faturar(quantidade);
 	}
+
+	@Override
+	public String toString() {
+		return "Estoque [codigoEstoque=" + codigoEstoque + ", quantidade=" + quantidade + ", quantidadeReservada="
+				+ quantidadeReservada + ", estadoEstoque=" + estadoEstoque + "]";
+	}
 }

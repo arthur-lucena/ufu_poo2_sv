@@ -1,13 +1,20 @@
 package edu.ufu.poo2.si.control;
 
+import java.math.BigDecimal;
+
 import edu.ufu.poo2.si.model.Cliente;
+import edu.ufu.poo2.si.model.Estoque;
+import edu.ufu.poo2.si.model.Pedido;
+import edu.ufu.poo2.si.model.Produto;
 import edu.ufu.poo2.si.model.Vendedor;
+import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
+import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
 
 public class Teste {
 
     public static void main(String[] args) {
-        testeVendedor();
+    	testeProduto();
     }
 
     public static void testeCliente() {
@@ -66,5 +73,46 @@ public class Teste {
         for (Vendedor ce : dao.buscarTodos()) {
             System.out.println(ce);
         }
+    }
+    
+    public static void testePedido() {
+    	VendedorDAO vendedorDao = new VendedorDAO();
+    	ClienteDAO clienteDao = new ClienteDAO();
+    	PedidoDAO pedidoDao = new PedidoDAO();
+    	
+    	pedidoDao.delete(1l);
+    	
+    	Pedido p = new Pedido();
+    	p.setFormaPagamento(EnumFormaPagamento.Dinheiro);
+    	p.setValorTotal(new BigDecimal(120.5));
+    	p.setCliente(clienteDao.buscar("09052671680"));
+    	p.setVendedor(vendedorDao.buscar("09052671681"));
+    	
+    	pedidoDao.insert(p);
+    	
+    	for (Pedido pd : pedidoDao.buscarTodos()) {
+    		System.out.println(pd);
+    	}
+    }
+    
+    public static void testeProduto() {
+    	Produto produto = new Produto();
+    	produto.setNomeProduto("Ferrari");
+    	produto.setPreco(new BigDecimal(1100010.5));
+    	
+    	Estoque estoque = new Estoque();
+    	estoque.setQuantidade(2);
+    	estoque.setQuantidadeReservada(0);
+    	estoque.setEstadoEstoque(EnumEstadoEstoque.EmEstoque);
+
+    	produto.setEstoque(estoque);
+    	
+    	ProdutoDAO dao = new ProdutoDAO();
+    	dao.delete(1l);
+    	dao.insert(produto);
+    	
+    	for (Produto pr : dao.buscarTodos()) {
+    		System.out.println(pr);
+    	}
     }
 }
