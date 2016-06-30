@@ -9,6 +9,7 @@ import java.util.List;
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.Estoque;
 import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
 
 public class EstoqueDAO {
 
@@ -21,7 +22,7 @@ public class EstoqueDAO {
 		this.fc = FactoryConnection.getInstance();
 	}
 
-	public List<Estoque> buscarTodos() {
+	public List<Estoque> buscarTodos() throws ErroException {
 		List<Estoque> retorno = new ArrayList<>();
 
 		try {
@@ -36,13 +37,13 @@ public class EstoqueDAO {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao buscar todos os estoque!", e);
 		}
 
 		return retorno;
 	}
 
-	public Estoque buscar(Long codigoEstoque) {
+	public Estoque buscar(Long codigoEstoque) throws ErroException {
 		Estoque retorno = new Estoque();
 
 		String sql = "select * from " + tabela + " where " + columnPk + " = ?";
@@ -62,13 +63,13 @@ public class EstoqueDAO {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao buscar o cliente" + codigoEstoque + "!", e);
 		}
 
 		return retorno;
 	}
 
-	public Estoque insert(Estoque p) {
+	public Estoque insert(Estoque p) throws ErroException {
 		String sql = "insert into " + tabela + "(" + columnPk + ", " + columns + ") " + "values (?,?,?,?)";
 
 		p.setCodigoEstoque(getNextPkEstoque());
@@ -87,13 +88,13 @@ public class EstoqueDAO {
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao inserir estoque! " + p, e);
 		}
 
 		return p;
 	}
 
-	public Estoque update(Estoque p) {
+	public Estoque update(Estoque p) throws ErroException {
 		String sql = "update " + tabela + " set qtd = ?, qtd_reserva = ?, estado_estoque where " + columnPk + " = ?";
 
 		PreparedStatement stmt;
@@ -112,13 +113,13 @@ public class EstoqueDAO {
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao atualizar o estoque! " + p, e);
 		}
 
 		return p;
 	}
 
-	public void delete(Long codigoEstoque) {
+	public void delete(Long codigoEstoque) throws ErroException {
 		String sql = "delete from " + tabela + " where " + columnPk + " = ?";
 
 		PreparedStatement stmt;
@@ -133,7 +134,7 @@ public class EstoqueDAO {
 
 			fc.getConnection().close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new ErroException("Falha ao deletar estoque" + codigoEstoque + "! ", e);
 		}
 	}
 

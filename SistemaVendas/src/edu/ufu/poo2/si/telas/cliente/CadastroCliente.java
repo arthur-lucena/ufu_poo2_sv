@@ -7,6 +7,7 @@ package edu.ufu.poo2.si.telas.cliente;
 
 import edu.ufu.poo2.si.control.ClienteDAO;
 import edu.ufu.poo2.si.model.Cliente;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
 
 import javax.swing.*;
 
@@ -120,19 +121,26 @@ public class CadastroCliente extends javax.swing.JFrame {
         Cliente toBePersisted = new Cliente();
         toBePersisted.setNome(nome);
         toBePersisted.setCPF(cpf);
-
-        if (clienteDAO.buscar(cpf) == null) {
-            clienteDAO.insert(toBePersisted);
-
-            JOptionPane.showMessageDialog(null, "Cliente criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        } else if (editando) {
-            clienteDAO.update(toBePersisted);
-            JOptionPane.showMessageDialog(null, "Cliente atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-            return;
+        try {
+	        if (clienteDAO.buscar(cpf) == null) {
+	            clienteDAO.insert(toBePersisted);
+	
+	            JOptionPane.showMessageDialog(null, "Cliente criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+	            return;
+	        } else if (editando) {
+	            clienteDAO.update(toBePersisted);
+	            JOptionPane.showMessageDialog(null, "Cliente atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+	            return;
+	        }
+	
+	        JOptionPane.showMessageDialog(null, "Já existe um cliente com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        } catch (ErroException e) {
+        	JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+        	e.printStackTrace();
+        } catch (Exception e) {
+        	JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
+        	e.printStackTrace();
         }
-
-        JOptionPane.showMessageDialog(null, "Já existe um cliente com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
 
     }//GEN-LAST:event_btnSalvarActionPerformed
 
