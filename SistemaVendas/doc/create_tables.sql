@@ -21,7 +21,7 @@ USE `sv` ;
 -- Table `sv`.`cliente`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sv`.`cliente` (
-  `cpf` INT(12) NOT NULL,
+  `cpf` VARCHAR(14) NOT NULL,
   `nome_cliente` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`cpf`))
 ENGINE = InnoDB;
@@ -31,7 +31,7 @@ ENGINE = InnoDB;
 -- Table `sv`.`vendedor`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sv`.`vendedor` (
-  `cpf` INT(12) NOT NULL,
+  `cpf` VARCHAR(14) NOT NULL,
   `nome_cliente` VARCHAR(45) NOT NULL,
   `nivel` INT NOT NULL,
   PRIMARY KEY (`cpf`))
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS `sv`.`pedido` (
   `codigo_pedido` INT NOT NULL,
   `forma_pagamento` INT NOT NULL,
   `valor_total` DOUBLE NOT NULL,
-  `vendedor_cpf` INT NOT NULL,
-  `cliente_cpf` INT NOT NULL,
+  `vendedor_cpf` VARCHAR(14) NOT NULL,
+  `cliente_cpf` VARCHAR(14) NOT NULL,
   PRIMARY KEY (`codigo_pedido`),
   INDEX `fk_pedido_vendedor1_idx` (`vendedor_cpf` ASC),
   INDEX `fk_pedido_cliente1_idx` (`cliente_cpf` ASC),
