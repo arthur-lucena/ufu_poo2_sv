@@ -5,12 +5,12 @@ import java.math.BigDecimal;
 public class ItemPedido {
 
 	private Long codigoPedido;
-	
-	private Long codigoProduto;
 
     private BigDecimal valor;
 
     private int quantidade;
+    
+    private Produto produto;
 
     public Long getCodigoPedido() {
 		return codigoPedido;
@@ -18,14 +18,6 @@ public class ItemPedido {
 
 	public void setCodigoPedido(Long codigoPedido) {
 		this.codigoPedido = codigoPedido;
-	}
-
-	public Long getCodigoProduto() {
-		return codigoProduto;
-	}
-
-	public void setCodigoProduto(Long codigoProduto) {
-		this.codigoProduto = codigoProduto;
 	}
 
 	public BigDecimal getValor() {
@@ -44,9 +36,17 @@ public class ItemPedido {
         this.quantidade = quantidade;
     }
 
+    public Produto getProduto() {
+		return produto;
+	}
+
+	public void setProduto(Produto produto) {
+		this.produto = produto;
+	}
+
 	@Override
 	public String toString() {
-		return "ItemPedido [codigoPedido=" + codigoPedido + ", codigoProduto=" + codigoProduto + ", valor=" + valor
-				+ ", quantidade=" + quantidade + "]";
+		return "ItemPedido [codigoPedido=" + codigoPedido + ", valor=" + valor + ", quantidade=" + quantidade
+				+ ", produto=" + produto + "]";
 	}
 }
