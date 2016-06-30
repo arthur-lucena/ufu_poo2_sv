@@ -3,31 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.ufu.poo2.si.telas.cliente;
-
-import edu.ufu.poo2.si.control.ClienteDAO;
-import edu.ufu.poo2.si.model.Cliente;
-
-import javax.swing.*;
+package edu.ufu.poo2.si.telas.vendedor;
 
 /**
  *
  * @author gmahlow
  */
-public class CadastroCliente extends javax.swing.JFrame {
+public class CadastroVendedor extends javax.swing.JFrame {
 
     private Boolean editando;
 
     /**
-     * Creates new form Teste
+     * Creates new form CadastroVendedor
      */
-    public CadastroCliente() {
+    public CadastroVendedor() {
         initComponents();
     }
 
-    public CadastroCliente(Boolean editando)    {
+    public CadastroVendedor(Boolean editando)   {
         this();
-        this.editando = editando;
+        this.editando = true;
     }
 
     /**
@@ -39,26 +34,16 @@ public class CadastroCliente extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        labelSistema = new javax.swing.JLabel();
         textNome = new javax.swing.JTextField();
         btnSalvar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         textCpf = new javax.swing.JFormattedTextField();
-
-        setResizable(false);
-
-        labelSistema.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
-        labelSistema.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelSistema.setText("Sistema de Vendas");
-        labelSistema.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        labelSistema = new javax.swing.JLabel();
+        comboNivel = new javax.swing.JComboBox<>();
+        labelNivel = new javax.swing.JLabel();
 
         btnSalvar.setText("Salvar");
-        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSalvarActionPerformed(evt);
-            }
-        });
 
         jLabel1.setText("CPF");
 
@@ -69,6 +54,15 @@ public class CadastroCliente extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+
+        labelSistema.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
+        labelSistema.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelSistema.setText("Sistema de Vendas");
+        labelSistema.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        comboNivel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nível 1", "Nível 2" }));
+
+        labelNivel.setText("Nível Vendedor");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -82,7 +76,11 @@ public class CadastroCliente extends javax.swing.JFrame {
                     .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(textCpf))
+                    .addComponent(textCpf)
+                    .addComponent(comboNivel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelNivel)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -98,35 +96,17 @@ public class CadastroCliente extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelNivel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(comboNivel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSalvar)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        // TODO add your handling code here:
-        if (textCpf.getText().length() < 14 || textNome.getText().isEmpty())   {
-            JOptionPane.showMessageDialog(null, "Você precisa preencher todos os campos corretamente!", "Erro!", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String cpf = textCpf.getText();
-        String nome = textNome.getText();
-
-        ClienteDAO clienteDAO = new ClienteDAO();
-
-        if (clienteDAO.buscar(cpf).getCPF() == null)    {
-            Cliente toBePersisted = new Cliente();
-
-            toBePersisted.setNome(cpf);
-            toBePersisted.setCPF(nome);
-
-            clienteDAO.insert(toBePersisted);
-        }
-    }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,29 +125,30 @@ public class CadastroCliente extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroVendedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroVendedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroVendedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CadastroVendedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CadastroCliente().setVisible(true);
+                new CadastroVendedor().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSalvar;
+    private javax.swing.JComboBox<String> comboNivel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel labelNivel;
     private javax.swing.JLabel labelSistema;
     private javax.swing.JFormattedTextField textCpf;
     private javax.swing.JTextField textNome;
