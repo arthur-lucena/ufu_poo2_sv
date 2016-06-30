@@ -5,14 +5,14 @@ import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
 public class Estoque {
 
 	private Long codigoEstoque;
-	
-    private Integer quantidade;
 
-    private Integer quantidadeReservada;
+	private Integer quantidade;
 
-    private EnumEstadoEstoque estadoEstoque;
+	private Integer quantidadeReservada;
 
-    public Long getCodigoEstoque() {
+	private EnumEstadoEstoque estadoEstoque;
+
+	public Long getCodigoEstoque() {
 		return codigoEstoque;
 	}
 
@@ -21,38 +21,34 @@ public class Estoque {
 	}
 
 	public Integer getQuantidade() {
-        return quantidade;
-    }
+		return quantidade;
+	}
 
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
+	}
 
-    public Integer getQuantidadeReservada() {
-        return quantidadeReservada;
-    }
+	public Integer getQuantidadeReservada() {
+		return quantidadeReservada;
+	}
 
-    public void setQuantidadeReservada(Integer quantidadeReservada) {
-        this.quantidadeReservada = quantidadeReservada;
-    }
+	public void setQuantidadeReservada(Integer quantidadeReservada) {
+		this.quantidadeReservada = quantidadeReservada;
+	}
 
-    public EnumEstadoEstoque getEstadoEstoque() {
-        return estadoEstoque;
-    }
+	public EnumEstadoEstoque getEstadoEstoque() {
+		return estadoEstoque;
+	}
 
-    public void setEstadoEstoque(EnumEstadoEstoque estadoEstoque) {
-        this.estadoEstoque = estadoEstoque;
-    }
-    
-    public adicionar(int quantidade){
-        estadoEstoque.incrementar(quantidade);
-    }
-    
-    public faturar(int quantidade){
-        estadoEstoque.faturar(quantidade);
-    }
-    
-     public reservar(int quantidade){
-        estadoEstoque.reservar(quantidade);
-    }
+	public void setEstadoEstoque(EnumEstadoEstoque estadoEstoque) {
+		this.estadoEstoque = estadoEstoque;
+	}
+
+	public void adicionar(int quantidade) {
+		estadoEstoque.getStateClass(this).adicionar(quantidade);
+	}
+
+	public void faturar(int quantidade) {
+		estadoEstoque.getStateClass(this).faturar(quantidade);
+	}
 }

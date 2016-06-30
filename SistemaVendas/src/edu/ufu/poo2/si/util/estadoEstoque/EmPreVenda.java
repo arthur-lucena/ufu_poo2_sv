@@ -1,35 +1,34 @@
 package edu.ufu.poo2.si.util.estadoEstoque;
 
 import edu.ufu.poo2.si.api.EstadoEstoque;
-import edu.ufu.poo2.si.model.Estoque;
+import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
 
 public class EmPreVenda extends EstadoEstoque {
 
-     public EmPreVenda(Estoque estoque){
-        super(estoque);
-    }
+	public void adicionar(int quantidade) {
+		if (quantidade > estoque.getQuantidadeReservada()) {
+			System.out.println("Quantidade descontanda unidades da prevenda: " + estoque.getQuantidadeReservada());
+			quantidade = quantidade - estoque.getQuantidadeReservada();
 
-    public void adicionar(int quantidade) {
-        this.getEstoque().setQuantidade(getEstoque().setQuantidade() + quantidade); 
-        System.out.println("Quantidade Incrementada: " + quantidade);
-        this.verificarEstado();
-    }
-    
-    public void faturar(int quantidade) {
-        System.out.println("O produto está em falta no estoque!Porém há como reservá-lo!");
-    }
+			System.out.println("Quantidade Incrementada: " + quantidade);
+			estoque.setQuantidade(estoque.getQuantidade() + quantidade);
+		} else {
+			System.out.println("Quantidade Descontada da Reserva: " + quantidade);
+			estoque.setQuantidadeReservada(estoque.getQuantidadeReservada() - quantidade);
+		}
 
-    public void reservar(int quantidade) {
-        this.getEstoque().setQuantidadeReservada(getEstoque().setQuantidadeReservada + quantidade); 
-        System.out.println("O produto está em falta no estoque!");
-        this.verificarEstado();
-    }
-    
-     public void verificarEstado(){
-        if(this.getEstoque.getQuantidade > 0){
-            this.getEstoque.setEstadoEstoque(new EmEstoque(this.getEstoque());
-        }
-        
-    }
-    
+		this.verificarEstado();
+	}
+
+	public void faturar(int quantidade) {
+		estoque.setQuantidadeReservada(estoque.getQuantidadeReservada() + quantidade);
+		System.out.println("O produto faturado em prevenda");
+		this.verificarEstado();
+	}
+
+	public void verificarEstado() {
+		if (estoque.getQuantidade() > 0) {
+			estoque.setEstadoEstoque(EnumEstadoEstoque.EmEstoque);
+		}
+	}
 }
