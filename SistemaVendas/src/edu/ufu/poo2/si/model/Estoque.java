@@ -12,6 +12,15 @@ public class Estoque {
 	private Integer quantidadeReservada;
 
 	private EnumEstadoEstoque estadoEstoque;
+	
+	public Estoque () {}
+	
+	public Estoque (Estoque estoque) {
+		codigoEstoque = estoque.codigoEstoque;
+		quantidade = estoque.quantidade;
+		quantidadeReservada = estoque.quantidadeReservada;
+		estadoEstoque = estoque.estadoEstoque;
+	}
 
 	public Long getCodigoEstoque() {
 		return codigoEstoque;

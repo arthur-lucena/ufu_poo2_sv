@@ -18,7 +18,7 @@ import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 public class Teste {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		testePedido();
 	}
 	
@@ -27,10 +27,15 @@ public class Teste {
 		// TODO validar pagamento
 		faturarPedido(pedido);
 		
-		PedidoDAO pedidoDAO = new PedidoDAO();
-		pedidoDAO.insert(pedido);
+		
 	}
 	
+	/**
+	 * Processo de faturamento de pedido atomico
+	 * @param pedido
+	 * @throws ErroException
+	 * @throws ValidacaoException
+	 */
 	public static void faturarPedido(Pedido pedido) throws ErroException, ValidacaoException {
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 		List<Produto> produtosASeremFaturadosRollBack = new ArrayList<Produto>();
@@ -46,16 +51,26 @@ public class Teste {
 		
 		// clonando objetos
 		for (ItemPedido ip : pedido.getItens()) {
-			produtosASeremFaturadosRollBack.add(ip.getProduto());
+			produtosASeremFaturadosRollBack.add( new Produto(ip.getProduto()));
 		}
-		
+
 		try {
 			for (ItemPedido ip : pedido.getItens()) {
 				// tentando faturar o produto
 				ip.getProduto().getEstoque().faturar(ip.getQuantidade());
 				produtoDAO.update(ip.getProduto());
 			}
+			
+			gravarPedido(pedido);
 		} catch (ValidacaoException e) {
+			// caso não seja possivel faturar deve se efetuar o rollback do outros produto
+			// voltando a quantidade anterior antes de serem faturados
+			for (Produto p : produtosASeremFaturadosRollBack) {
+				produtoDAO.update(p);
+			}
+			
+			throw e;
+		} catch (Exception e) {
 			// caso não seja possivel faturar deve se efetuar o rollback do outros produto
 			// voltando a quantidade anterior antes de serem faturados
 			for (Produto p : produtosASeremFaturadosRollBack) {
@@ -65,7 +80,12 @@ public class Teste {
 			throw e;
 		}
 	}
-
+	
+	public static void gravarPedido(Pedido pedido) throws ErroException {
+		PedidoDAO pedidoDAO = new PedidoDAO();
+		pedidoDAO.insert(pedido);
+	}
+	
 	public static void cargaDeCliente() {
 		ClienteDAO dao = new ClienteDAO();
 
@@ -218,31 +238,27 @@ public class Teste {
 	public static void testePedido() {
 		VendedorDAO vendedorDAO = new VendedorDAO();
 		ClienteDAO clienteDAO = new ClienteDAO();
-		PedidoDAO pedidoDAO = new PedidoDAO();
+		// PedidoDAO pedidoDAO = new PedidoDAO();
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 
 		try {
 			Pedido p = new Pedido();
 			p.setFormaPagamento(EnumFormaPagamento.Dinheiro);
 			p.setValorTotal(new BigDecimal(120.5));
-			p.setCliente(clienteDAO.buscar("09052671680"));
-			p.setVendedor(vendedorDAO.buscar("09052671681"));
+			p.setCliente(clienteDAO.buscar("02172030945"));
+			p.setVendedor(vendedorDAO.buscar("03587339872"));
 
 			ItemPedido ip = new ItemPedido();
 			ip.setQuantidade(1);
-			ip.setValor(new BigDecimal(13213.5));
-			ip.setProduto(produtoDAO.buscar(1l));
+			ip.setValor(new BigDecimal(40.5));
+			ip.setProduto(produtoDAO.buscar(8l));
 
 			p.getItens().add(ip);
 
-			pedidoDAO.insert(p);
-
-			for (Pedido pd : pedidoDAO.buscarTodos()) {
-				System.out.println(pd);
-			}
-
+			fechaVenda(p);
 		} catch (ErroException e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
