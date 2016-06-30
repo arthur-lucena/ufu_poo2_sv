@@ -34,7 +34,7 @@ public class ItemPedido {
         return desconto;
     }
 
-    public void setDesconto(int quantidade) {
+    public void setDesconto(int desconto) {
         this.desconto = desconto;
     }
 	
@@ -56,12 +56,7 @@ public class ItemPedido {
 
 	@Override
 	public String toString() {
-<<<<<<< HEAD
-		return "ItemPedido [codigoPedido=" + codigoPedido + ", codigoProduto=" + codigoProduto + ", valor=" + valor
-				+ ", quantidade=" + quantidade +", desconto="+ desconto+"%"+"]";
-=======
-		return "ItemPedido [codigoPedido=" + codigoPedido + ", valor=" + valor + ", quantidade=" + quantidade
-				+ ", produto=" + produto + "]";
->>>>>>> bf1b535b4415878f4a0459bbf0d1ef9d786cad90
+		return "ItemPedido [codigoPedido=" + codigoPedido + ", valor=" + valor + ", desconto=" + desconto
+				+ ", quantidade=" + quantidade + ", produto=" + produto + "]";
 	}
 }
