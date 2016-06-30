@@ -1,6 +1,6 @@
 package edu.ufu.poo2.si.model;
 
-import edu.ufu.poo2.si.api.EstadoEstoque;
+import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
 
 public class Estoque {
 
@@ -10,7 +10,7 @@ public class Estoque {
 
     private Integer quantidadeReservada;
 
-    private EstadoEstoque estadoEstoque;
+    private EnumEstadoEstoque estadoEstoque;
 
     public Long getCodigoEstoque() {
 		return codigoEstoque;
@@ -36,11 +36,11 @@ public class Estoque {
         this.quantidadeReservada = quantidadeReservada;
     }
 
-    public EstadoEstoque getEstadoEstoque() {
+    public EnumEstadoEstoque getEstadoEstoque() {
         return estadoEstoque;
     }
 
-    public void setEstadoEstoque(EstadoEstoque estadoEstoque) {
+    public void setEstadoEstoque(EnumEstadoEstoque estadoEstoque) {
         this.estadoEstoque = estadoEstoque;
     }
 }

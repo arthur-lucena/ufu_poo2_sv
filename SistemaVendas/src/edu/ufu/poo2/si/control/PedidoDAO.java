@@ -8,7 +8,7 @@ import java.util.List;
 
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.Pedido;
-import edu.ufu.poo2.si.util.EnumFormaPagamento;
+import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 
 public class PedidoDAO {
 

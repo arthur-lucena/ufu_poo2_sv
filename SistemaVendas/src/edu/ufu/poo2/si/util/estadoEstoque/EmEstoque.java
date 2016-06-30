@@ -1,9 +1,9 @@
-package edu.ufu.poo2.si.util;
+package edu.ufu.poo2.si.util.estadoEstoque;
 
 import edu.ufu.poo2.si.api.EstadoEstoque;
 import edu.ufu.poo2.si.model.Estoque;
 
-public class EmPreVenda implements EstadoEstoque {
+public class EmEstoque implements EstadoEstoque {
 
     public void faturar(Estoque estoque) {
 

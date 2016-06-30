@@ -2,7 +2,7 @@ package edu.ufu.poo2.si.control;
 
 import edu.ufu.poo2.si.control.utils.FactoryConnection;
 import edu.ufu.poo2.si.model.Vendedor;
-import edu.ufu.poo2.si.util.EnumNivelVendedor;
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
