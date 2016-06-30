@@ -2,6 +2,8 @@ package edu.ufu.poo2.si.model;
 
 import java.math.BigDecimal;
 
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
+
 public class ItemPedido {
 
 	private Long codigoPedido;
@@ -13,6 +15,8 @@ public class ItemPedido {
     private int quantidade;
     
     private Produto produto;
+    
+    private EnumNivelVendedor nivelVendedoLibera;
 
     public Long getCodigoPedido() {
 		return codigoPedido;
@@ -52,6 +56,14 @@ public class ItemPedido {
 
 	public void setProduto(Produto produto) {
 		this.produto = produto;
+	}
+
+	public EnumNivelVendedor getNivelVendedoLibera() {
+		return nivelVendedoLibera;
+	}
+
+	public void setNivelVendedoLibera(EnumNivelVendedor nivelVendedoLibera) {
+		this.nivelVendedoLibera = nivelVendedoLibera;
 	}
 
 	@Override
