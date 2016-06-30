@@ -10,7 +10,8 @@ public class EmPreVenda extends EstadoEstoque {
 		if (quantidade > estoque.getQuantidadeReservada()) {
 			System.out.println("Quantidade descontanda unidades da prevenda: " + estoque.getQuantidadeReservada());
 			quantidade = quantidade - estoque.getQuantidadeReservada();
-
+			estoque.setQuantidadeReservada(0);
+			
 			System.out.println("Quantidade Incrementada: " + quantidade);
 			estoque.setQuantidade(estoque.getQuantidade() + quantidade);
 		} else {
