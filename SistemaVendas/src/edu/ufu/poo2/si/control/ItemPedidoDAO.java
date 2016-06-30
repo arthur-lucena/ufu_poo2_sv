@@ -54,7 +54,7 @@ public class ItemPedidoDAO {
 			stmt.setInt(1, ip.getQuantidade());
 			stmt.setBigDecimal(2, ip.getValor());
 			stmt.setLong(3, ip.getCodigoPedido());
-			stmt.setLong(4, ip.getCodigoProduto());
+			stmt.setLong(4, ip.getProduto().getCodigoProduto());
 
 			stmt.execute();
 			stmt.close();
@@ -86,11 +86,12 @@ public class ItemPedidoDAO {
 		}
 	}
 
-	private ItemPedido montaItemPedido(ResultSet rs) throws SQLException {
+	private ItemPedido montaItemPedido(ResultSet rs) throws ErroException, SQLException {
 		ItemPedido retorno = new ItemPedido();
-
+		ProdutoDAO produtoDAO = new ProdutoDAO(); 
+		
 		retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
-		retorno.setCodigoProduto(rs.getLong("codigo_produto"));
+		retorno.setProduto(produtoDAO.buscar(rs.getLong("codigo_produto")));
 		retorno.setQuantidade(rs.getInt("qtd"));
 		retorno.setValor(rs.getBigDecimal("valor"));
 
