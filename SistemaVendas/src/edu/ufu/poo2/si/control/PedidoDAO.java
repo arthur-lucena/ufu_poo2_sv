@@ -154,7 +154,7 @@ public class PedidoDAO {
 
         retorno.setCodigoPedido(rs.getLong("codigo_pedido"));
         retorno.setFormaPagamento(EnumFormaPagamento.getFormaPagamento(rs.getInt("forma_pagamento")));
-        retorno.setValorTotal(rs.getBigDecimal("nivel"));
+        retorno.setValorTotal(rs.getBigDecimal("valor_total"));
 
         ClienteDAO daoCliente = new ClienteDAO();
         retorno.setCliente(daoCliente.buscar(rs.getString("cliente_cpf")));
