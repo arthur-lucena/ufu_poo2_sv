@@ -1,10 +1,12 @@
 package edu.ufu.poo2.si.model;
 
+import java.math.BigDecimal;
+
 public class Produto {
 
     private String nome;
 
-    private double preco;
+    private BigDecimal preco;
 
     private Estoque estoque;
 
@@ -16,11 +18,11 @@ public class Produto {
         this.nome = nome;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 

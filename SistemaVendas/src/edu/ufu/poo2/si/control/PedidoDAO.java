@@ -1,15 +1,14 @@
 package edu.ufu.poo2.si.control;
 
-import edu.ufu.poo2.si.control.utils.FactoryConnection;
-import edu.ufu.poo2.si.model.Pedido;
-import edu.ufu.poo2.si.model.Vendedor;
-import edu.ufu.poo2.si.util.EnumFormaPagamento;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.ufu.poo2.si.control.utils.FactoryConnection;
+import edu.ufu.poo2.si.model.Pedido;
+import edu.ufu.poo2.si.util.EnumFormaPagamento;
 
 public class PedidoDAO {
 
@@ -48,9 +47,11 @@ public class PedidoDAO {
 
     public Pedido buscar(Long codigoPedido) {
         Pedido retorno = new Pedido();
+        
+        String sql = "select * from " + tabela + " where " + columnPk + " = ?";
 
         try {
-            PreparedStatement stmt = fc.getConnection().prepareStatement("select * from " + tabela + " where " + columnPk + " = ?");
+            PreparedStatement stmt = fc.getConnection().prepareStatement(sql);
             stmt.setLong(1, codigoPedido);
 
             ResultSet rs = stmt.executeQuery();
@@ -102,31 +103,8 @@ public class PedidoDAO {
         return p;
     }
 
-    public Vendedor update(Vendedor v) {
-//		String sql = "update " + tabela + " set nome_cliente = ?, nivel = ? where cpf = ?";
-//
-//		PreparedStatement stmt;
-//
-//		try {
-//			stmt = fc.getConnection().prepareStatement(sql);
-//
-//			stmt.setString(1, v.getNome());
-//			stmt.setInt(2, v.getNivel().ordinal());
-//			stmt.setString(3, v.getCPF());
-//			
-//			stmt.execute();
-//			stmt.close();
-//
-//			fc.getConnection().close();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-        return v;
-    }
-
     public void delete(Long codigoPedido) {
-        String sql = "delete from " + tabela + " where codigo_pedido = ?";
+        String sql = "delete from " + tabela + " where " + columnPk + " = ?";
 
         PreparedStatement stmt;
 
