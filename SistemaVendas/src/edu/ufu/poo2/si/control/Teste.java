@@ -23,11 +23,33 @@ public class Teste {
 	}
 	
 	public static void fechaVenda(Pedido pedido) throws ErroException, ValidacaoException {
-		// TODO validar desconto dos itens
+		
+		
 		// TODO validar pagamento
 		faturarPedido(pedido);
-		
-		
+	}
+	
+	/**
+	 * Valida o desconto do nivel de desconto que o vendedor pode dar
+	 * @param pedido
+	 * @throws ValidacaoException
+	 */
+	public static void verificarNivelVendedor(Pedido pedido) throws ValidacaoException {
+		for (ItemPedido ip : pedido.getItens()) {
+			EnumNivelVendedor nivelVendedor = pedido.getVendedor().getNivel();
+			
+			nivelVendedor.getCommandClass().validarDesconto(ip);
+			
+			if (!ip.getNivelVendedoLibera().equals(nivelVendedor)) {
+				String msg = "Para liberar o desconto do produto "
+						+ ip.getProduto().getCodigoProduto()
+						+ " é necessário que o vendedor seja nível "
+						+ ip.getNivelVendedoLibera().name()
+						+ "! Favor abaixar o desconto ou mudar de vendedor.";
+				
+				throw new ValidacaoException(msg);
+			}
+		}
 	}
 	
 	/**
@@ -238,7 +260,6 @@ public class Teste {
 	public static void testePedido() {
 		VendedorDAO vendedorDAO = new VendedorDAO();
 		ClienteDAO clienteDAO = new ClienteDAO();
-		// PedidoDAO pedidoDAO = new PedidoDAO();
 		ProdutoDAO produtoDAO = new ProdutoDAO();
 
 		try {

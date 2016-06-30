@@ -1,7 +1,6 @@
 package edu.ufu.poo2.si.util.enums;
 
 import edu.ufu.poo2.si.api.NivelVendedor;
-import edu.ufu.poo2.si.model.Estoque;
 import edu.ufu.poo2.si.util.nivelVendedor.VendedorOuro;
 import edu.ufu.poo2.si.util.nivelVendedor.VendedorPlatina;
 import edu.ufu.poo2.si.util.nivelVendedor.VendedorPrata;
@@ -27,7 +26,7 @@ public enum EnumNivelVendedor {
         return null;
     }
     
-    public NivelVendedor getCommandClass(Estoque estoque) {
+    public NivelVendedor getCommandClass() {
     	return nivelVendedor;
     }
 }
