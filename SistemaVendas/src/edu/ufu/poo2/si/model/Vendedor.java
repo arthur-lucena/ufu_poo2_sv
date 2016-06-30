@@ -1,6 +1,6 @@
 package edu.ufu.poo2.si.model;
 
-import edu.ufu.poo2.si.util.EnumNivelVendedor;
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
 
 public class Vendedor {
 
