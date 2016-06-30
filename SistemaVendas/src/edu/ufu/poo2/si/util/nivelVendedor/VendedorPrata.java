@@ -1,29 +1,19 @@
 package edu.ufu.poo2.si.util.nivelVendedor;
 
 import edu.ufu.poo2.si.api.NivelVendedor;
+import edu.ufu.poo2.si.model.ItemPedido;
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
+import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 public class VendedorPrata implements NivelVendedor {
-    
-    public nivelVendedor Sucessor;
 
-    public void realizarVenda(ItemPedido p) {
-            
-        if(p.getDesconto() < 5){
-             p.setvalor(p.getValor() * p.getDesconto()/100);
-              p.toString();
-        }
-        else if(this.getSucessor() != Null){
-            this.getSucessor().realizarVenda(ItemPedido p);
-        }
-    }
+	private NivelVendedor sucessor = new VendedorOuro();
 
-    public void setSucessor(NivelVendedor nivelvendedor){
-        this.Sucessor = nivelvendedor;
-    }
-    
-    public NivelVendedor getSucessor(){
-        return Sucessor;
-    }
-    
-
+	public void validarDesconto(ItemPedido ip) throws ValidacaoException {
+		if (ip.getDesconto() > 5) {
+			this.sucessor.validarDesconto(ip);
+		} else {
+			ip.setNivelVendedoLibera(EnumNivelVendedor.Prata);
+		}
+	}
 }
