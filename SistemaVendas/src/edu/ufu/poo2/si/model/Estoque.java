@@ -33,4 +33,16 @@ public class Estoque {
     public void setEstadoEstoque(EstadoEstoque estadoEstoque) {
         this.estadoEstoque = estadoEstoque;
     }
+    
+    public adicionar(int quantidade){
+        estadoEstoque.incrementar(quantidade);
+    }
+    
+    public faturar(int quantidade){
+        estadoEstoque.faturar(quantidade);
+    }
+    
+     public reservar(int quantidade){
+        estadoEstoque.reservar(quantidade);
+    }
 }

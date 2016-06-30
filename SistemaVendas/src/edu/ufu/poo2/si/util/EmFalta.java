@@ -3,14 +3,36 @@ package edu.ufu.poo2.si.util;
 import edu.ufu.poo2.si.api.EstadoEstoque;
 import edu.ufu.poo2.si.model.Estoque;
 
-public class EmFalta implements EstadoEstoque {
+public class EmFalta extends EstadoEstoque {
 
-    public void faturar(Estoque estoque) {
-
+    public EmFalta(Estoque estoque){
+        super(estoque);
+    }
+    
+    public void adicionar(int quantidade) {
+        this.getEstoque().setQuantidade(getEstoque().setQuantidade() + quantidade); 
+        System.out.println("Quantidade Incrementada: " + quantidade);
+        this.verificarEstado();
+    }
+    
+    public void faturar(int quantidade) {
+        System.out.println("O produto está em falta no estoque!");
     }
 
-    public void reservar(Estoque estoque) {
-
+    public void reservar(int quantidade) {
+        this.getEstoque().setQuantidadeReservada(getEstoque().setQuantidadeReservada + quantidade); 
+        System.out.println("Quantidade reservada: "+quantidade);
+        this.verificarEstado();
+    }
+    
+     public void verificarEstado(){
+        if(this.getEstoque.getQuantidade > 0){
+            this.getEstoque.setEstadoEstoque(new EmEstoque(this.getEstoque());
+        }else if(this.getEstoque.getQuantidadeReservada > 0) {
+             this.getEstoque.setEstadoEstoque(new EmPreVenda(this.getEstoque());
+        }
+        
+        
     }
 
 }
