@@ -19,6 +19,8 @@ public class CadastroCliente extends javax.swing.JFrame {
     private Boolean editando;
     private ClienteDAO clienteDAO;
 
+    private Cliente clienteEditando;
+
     private VisualizarCliente formBeforeOpenEdit;
 
     /**
@@ -30,10 +32,11 @@ public class CadastroCliente extends javax.swing.JFrame {
         this.clienteDAO = new ClienteDAO();
     }
 
-    public CadastroCliente(Boolean editando, VisualizarCliente formBeforeOpenEdit) {
+    public CadastroCliente(Boolean editando, VisualizarCliente formBeforeOpenEdit, Cliente clienteEditando) {
         this();
         this.editando = editando;
         this.formBeforeOpenEdit = formBeforeOpenEdit;
+        this.clienteEditando = clienteEditando;
     }
 
     /**
@@ -53,6 +56,7 @@ public class CadastroCliente extends javax.swing.JFrame {
         textCpf = new javax.swing.JFormattedTextField();
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         labelSistema.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         labelSistema.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -121,31 +125,34 @@ public class CadastroCliente extends javax.swing.JFrame {
         String cpf = textCpf.getText();
         String nome = textNome.getText();
 
-        Cliente toBePersisted = new Cliente();
-        toBePersisted.setNome(nome);
-        toBePersisted.setCPF(cpf);
         try {
-	        if (clienteDAO.buscar(cpf) == null) {
-	            clienteDAO.insert(toBePersisted);
-	            this.setVisible(false);
-	            JOptionPane.showMessageDialog(null, "Cliente criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-	            return;
-	        } else if (editando) {
-	            clienteDAO.update(toBePersisted);
+            if (editando) {
+                clienteEditando.setNome(nome);
+
+                clienteDAO.update(clienteEditando);
                 formBeforeOpenEdit.preencheComponenteListClientes();
                 this.setVisible(false);
-	            JOptionPane.showMessageDialog(null, "Cliente atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-	            return;
-	        }
+                JOptionPane.showMessageDialog(null, "Cliente atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            } else if (clienteDAO.buscar(cpf) == null) {
+                Cliente toBePersisted = new Cliente();
+                toBePersisted.setNome(nome);
+                toBePersisted.setCPF(cpf);
+
+                clienteDAO.insert(toBePersisted);
+                this.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Cliente criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
             this.setVisible(false);
-	        JOptionPane.showMessageDialog(null, "Já existe um cliente com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Já existe um cliente com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
         } catch (ErroException e) {
-        	JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
-        	e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         } catch (Exception e) {
-        	JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
-        	e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
     }//GEN-LAST:event_btnSalvarActionPerformed

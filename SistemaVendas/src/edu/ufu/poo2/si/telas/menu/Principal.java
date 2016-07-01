@@ -64,6 +64,7 @@ public class Principal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        setLocationRelativeTo(null);
 
         btnCadastroCliente.setText("Cadastrar Cliente");
         btnCadastroCliente.addActionListener(new java.awt.event.ActionListener() {
@@ -123,7 +124,12 @@ public class Principal extends javax.swing.JFrame {
         btnVisualizarPedido.setText("Visualizar Pedidos");
         btnVisualizarPedido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVisualizarPedidoActionPerformed(evt);
+                try {
+                    btnVisualizarPedidoActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -214,10 +220,10 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastrarProdutoActionPerformed
 
     private void btnCadastrarPedidoActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnCadastrarPedidoActionPerformed
-        new CadastroPedido().setVisible(true);
+        new CadastroPedido(vendedorFromLogin).setVisible(true);
     }//GEN-LAST:event_btnCadastrarPedidoActionPerformed
 
-    private void btnVisualizarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVisualizarPedidoActionPerformed
+    private void btnVisualizarPedidoActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarPedidoActionPerformed
         new VisualizarPedido().setVisible(true);
     }//GEN-LAST:event_btnVisualizarPedidoActionPerformed
 

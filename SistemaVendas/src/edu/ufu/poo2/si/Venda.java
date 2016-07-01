@@ -39,9 +39,16 @@ public class Venda {
 		for (ItemPedido ip : pedido.getItens()) {
 			BigDecimal desconto = ip.getValor().multiply(BigDecimal.valueOf(100));
 			desconto = desconto.divide(ip.getProduto().getPreco(), 2, RoundingMode.HALF_UP);
-			
+
 			ip.setDesconto(100-desconto.intValue());
 		}
+	}
+
+	public void avaliaDescontoItemPedido(ItemPedido itemPedido)	{
+		BigDecimal desconto = itemPedido.getValor().multiply(BigDecimal.valueOf(100));
+		desconto = desconto.divide(itemPedido.getProduto().getPreco(), 2, RoundingMode.HALF_UP);
+
+		itemPedido.setDesconto(100-desconto.intValue());
 	}
 
 	/**

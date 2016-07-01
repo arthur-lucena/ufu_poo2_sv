@@ -59,6 +59,7 @@ public class Login extends javax.swing.JFrame {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setName("frmLogin"); // NOI18N
         setResizable(false);
+        setLocationRelativeTo(null);
 
         comboVendedor.setModel(vendedorList);
 

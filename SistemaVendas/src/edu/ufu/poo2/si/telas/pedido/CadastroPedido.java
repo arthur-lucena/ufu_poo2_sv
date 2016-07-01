@@ -5,6 +5,7 @@
  */
 package edu.ufu.poo2.si.telas.pedido;
 
+import edu.ufu.poo2.si.Venda;
 import edu.ufu.poo2.si.control.*;
 import edu.ufu.poo2.si.model.*;
 import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
@@ -22,15 +23,13 @@ import java.util.List;
  */
 public class CadastroPedido extends javax.swing.JFrame {
 
-    private Boolean editando;
-
     private Vendedor vendedorFromLogin;
+
+    private Venda venda;
 
     private ClienteDAO clienteDAO;
     private VendedorDAO vendedorDAO;
     private ProdutoDAO produtoDAO;
-    private ItemPedidoDAO itemPedidoDAO;
-    private PedidoDAO pedidoDAO;
 
     private DefaultComboBoxModel<EnumFormaPagamento> formaPagamentoList;
     private DefaultComboBoxModel<Cliente> clienteList;
@@ -38,14 +37,10 @@ public class CadastroPedido extends javax.swing.JFrame {
     private DefaultComboBoxModel<Produto> produtoList;
     private DefaultTableModel itemPedidoList;
 
-
-    private VisualizarPedido formBeforeOpenEdit;
-
     /**
      * Creates new form CadastroPedido
      */
     public CadastroPedido() throws ErroException {
-        this.editando = false;
         this.clienteDAO = new ClienteDAO();
         this.vendedorDAO = new VendedorDAO();
         this.produtoDAO = new ProdutoDAO();
@@ -54,8 +49,7 @@ public class CadastroPedido extends javax.swing.JFrame {
         this.vendedorList = new DefaultComboBoxModel<>();
         this.produtoList = new DefaultComboBoxModel<>();
         this.itemPedidoList = new DefaultTableModel();
-        this.itemPedidoDAO = new ItemPedidoDAO();
-        this.pedidoDAO = new PedidoDAO();
+        this.venda = new Venda();
         preencheClienteList();
         preencheVendedorList();
         preencheFormaPagamentoList();
@@ -65,17 +59,18 @@ public class CadastroPedido extends javax.swing.JFrame {
     }
 
     public CadastroPedido(Vendedor vendedorFromLogin) throws ErroException {
+        this();
         this.vendedorFromLogin = vendedorFromLogin;
     }
 
-    public void inicializaItemPedido() {
+    private void inicializaItemPedido() {
         itemPedidoList.addColumn("Produto");
         itemPedidoList.addColumn("Quantidade");
         itemPedidoList.addColumn("Valor Calculado");
         itemPedidoList.addColumn("Desconto");
     }
 
-    public void preencheClienteList() throws ErroException {
+    private void preencheClienteList() throws ErroException {
         Collection<Cliente> clientes = clienteDAO.buscarTodos();
 
         clienteList.removeAllElements();
@@ -84,7 +79,7 @@ public class CadastroPedido extends javax.swing.JFrame {
             clienteList.addElement(cliente);
     }
 
-    public void preencheVendedorList() throws ErroException {
+    private void preencheVendedorList() throws ErroException {
         Collection<Vendedor> vendedores = vendedorDAO.buscarTodos();
 
         vendedorList.removeAllElements();
@@ -93,7 +88,7 @@ public class CadastroPedido extends javax.swing.JFrame {
             vendedorList.addElement(vendedor);
     }
 
-    public void preencheProdutoList() throws ErroException {
+    private void preencheProdutoList() throws ErroException {
         Collection<Produto> produtos = produtoDAO.buscarTodos();
 
         produtoList.removeAllElements();
@@ -102,17 +97,11 @@ public class CadastroPedido extends javax.swing.JFrame {
             produtoList.addElement(produto);
     }
 
-    public void preencheFormaPagamentoList() throws ErroException {
+    private void preencheFormaPagamentoList() throws ErroException {
         formaPagamentoList.removeAllElements();
         formaPagamentoList.addElement(EnumFormaPagamento.Boleto);
         formaPagamentoList.addElement(EnumFormaPagamento.Cartao);
         formaPagamentoList.addElement(EnumFormaPagamento.Dinheiro);
-    }
-
-    public CadastroPedido(Boolean editando, VisualizarPedido formBeforeOpenEdit) throws ErroException {
-        this();
-        this.editando = editando;
-        this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
     /**
@@ -196,9 +185,11 @@ public class CadastroPedido extends javax.swing.JFrame {
 
         tableItemPedido.setModel(itemPedidoList);
         tableItemPedido.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tableItemPedido.setDefaultEditor(Object.class, null);
         jScrollPane2.setViewportView(tableItemPedido);
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -300,9 +291,9 @@ public class CadastroPedido extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        if (comboProduto.getSelectedItem() == null || textQtd.getValue() == null ||
-                comboCliente.getSelectedItem() == null || comboVendedor.getSelectedItem() == null ||
-                comboFormaPagamento.getSelectedItem() == null) {
+        if (comboProduto.getSelectedItem() == null || comboCliente.getSelectedItem() == null ||
+                comboVendedor.getSelectedItem() == null || comboFormaPagamento.getSelectedItem() == null ||
+                textValorTotal.getValue() == null) {
             JOptionPane.showMessageDialog(null, "Você precisa preencher todos os campos corretamente!", "Erro!", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -310,23 +301,23 @@ public class CadastroPedido extends javax.swing.JFrame {
         Cliente cliente = (Cliente) comboCliente.getSelectedItem();
         Vendedor vendedor = (Vendedor) comboVendedor.getSelectedItem();
         EnumFormaPagamento formaPagamento = (EnumFormaPagamento) comboFormaPagamento.getSelectedItem();
+        List<ItemPedido> itensPedido = getItemsPedido();
+        BigDecimal valorTotal = new BigDecimal(textValorTotal.getValue().toString());
 
-        Pedido toBePersisted = new Pedido();
-        toBePersisted.setCliente(cliente);
-        toBePersisted.setVendedor(vendedor);
-        toBePersisted.setFormaPagamento(formaPagamento);
-        toBePersisted.setItens(getItemsPedido());
+        if (itensPedido.size() == 0) {
+            JOptionPane.showMessageDialog(null, "Você precisa inserir itens no pedido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try {
-            if (editando) {
-//                formBeforeOpenEdit.preencheProdutosList();
-                this.setVisible(false);
-                JOptionPane.showMessageDialog(null, "Pedido atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+            Pedido toBePersisted = new Pedido();
+            toBePersisted.setItens(itensPedido);
+            toBePersisted.setCliente(cliente);
+            toBePersisted.setVendedor(vendedor);
+            toBePersisted.setFormaPagamento(formaPagamento);
+            toBePersisted.setValorTotal(valorTotal);
 
-            pedidoDAO.insert(toBePersisted);
-
+            venda.gravarPedido(toBePersisted);
             this.setVisible(false);
             JOptionPane.showMessageDialog(null, "Pedido criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
         } catch (ErroException e) {
@@ -340,6 +331,10 @@ public class CadastroPedido extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnSalvarActionPerformed
 
+    public void insereItemTabela(ItemPedido itemPedido)  {
+        itemPedidoList.addRow(new Object[]{itemPedido.getProduto(), itemPedido.getQuantidade(), itemPedido.getValor(), itemPedido.getDesconto()});
+    }
+
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (textQtd.getValue() == null) {
             JOptionPane.showMessageDialog(null, "Digite uma quantidade!", "Erro!", JOptionPane.ERROR_MESSAGE);
@@ -348,26 +343,56 @@ public class CadastroPedido extends javax.swing.JFrame {
 
         Produto produto = (Produto) comboProduto.getSelectedItem();
         Integer quantidade = Integer.parseInt(textQtd.getValue().toString());
-        BigDecimal preco = produto.getPreco().multiply(new BigDecimal(quantidade));
+        BigDecimal preco = produto.getPreco();
 
-        itemPedidoList.addRow(new Object[]{produto, quantidade, preco, 0});
+        ItemPedido itemPedido = new ItemPedido();
+        itemPedido.setProduto(produto);
+        itemPedido.setQuantidade(quantidade);
+        itemPedido.setValor(preco);
+        itemPedido.setNivelVendedoLibera(vendedorFromLogin.getNivel());
+        venda.avaliaDescontoItemPedido(itemPedido);
+        itemPedido.setValor(itemPedido.getValor().subtract(new BigDecimal(itemPedido.getDesconto())));
+
+        insereItemTabela(itemPedido);
+
+        textQtd.setValue(null);
 
         atualizaValorTotal();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public void atualizaValorTotal() {
+    private Pedido getPedidoTela() {
+        Cliente cliente = (Cliente) comboCliente.getSelectedItem();
+        Vendedor vendedor = (Vendedor) comboVendedor.getSelectedItem();
+        EnumFormaPagamento formaPagamento = (EnumFormaPagamento) comboFormaPagamento.getSelectedItem();
+        List<ItemPedido> itensPedido = getItemsPedido();
+
+        Pedido pedidoTela = new Pedido();
+        pedidoTela.setCliente(cliente);
+        pedidoTela.setVendedor(vendedor);
+        pedidoTela.setFormaPagamento(formaPagamento);
+        pedidoTela.setItens(itensPedido);
+
+        return pedidoTela;
+    }
+
+    private void atualizaValorTotal() {
         Integer qtdRows = tableItemPedido.getRowCount();
         BigDecimal valorTotal = BigDecimal.ZERO;
 
         for (int i = 0; i < qtdRows; i++) {
             BigDecimal valor = (BigDecimal) itemPedidoList.getValueAt(i, 2);
+            Integer quantidade = (Integer) itemPedidoList.getValueAt(i, 1);
+            Integer desconto = (Integer) itemPedidoList.getValueAt(i, 3);
+            valor = valor.multiply(new BigDecimal(quantidade));
+            valor = valor.subtract(new BigDecimal(desconto));
+
             valorTotal = valorTotal.add(valor);
         }
 
         textValorTotal.setValue(valorTotal);
     }
 
-    public List<ItemPedido> getItemsPedido()  {
+    private List<ItemPedido> getItemsPedido() {
         Integer qtdRows = tableItemPedido.getRowCount();
         List<ItemPedido> itensPedido = new ArrayList<>();
 
@@ -460,4 +485,85 @@ public class CadastroPedido extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField textQtd;
     private javax.swing.JFormattedTextField textValorTotal;
     // End of variables declaration//GEN-END:variables
+
+
+    public JFormattedTextField getTextValorTotal() {
+        return textValorTotal;
+    }
+
+    public void setTextValorTotal(JFormattedTextField textValorTotal) {
+        this.textValorTotal = textValorTotal;
+    }
+
+    public JFormattedTextField getTextQtd() {
+        return textQtd;
+    }
+
+    public void setTextQtd(JFormattedTextField textQtd) {
+        this.textQtd = textQtd;
+    }
+
+    public JTable getTableItemPedido() {
+        return tableItemPedido;
+    }
+
+    public void setTableItemPedido(JTable tableItemPedido) {
+        this.tableItemPedido = tableItemPedido;
+    }
+
+    public JComboBox<Vendedor> getComboVendedor() {
+        return comboVendedor;
+    }
+
+    public void setComboVendedor(JComboBox<Vendedor> comboVendedor) {
+        this.comboVendedor = comboVendedor;
+    }
+
+    public JComboBox<Produto> getComboProduto() {
+        return comboProduto;
+    }
+
+    public void setComboProduto(JComboBox<Produto> comboProduto) {
+        this.comboProduto = comboProduto;
+    }
+
+    public JComboBox<EnumFormaPagamento> getComboFormaPagamento() {
+        return comboFormaPagamento;
+    }
+
+    public void setComboFormaPagamento(JComboBox<EnumFormaPagamento> comboFormaPagamento) {
+        this.comboFormaPagamento = comboFormaPagamento;
+    }
+
+    public JComboBox<Cliente> getComboCliente() {
+        return comboCliente;
+    }
+
+    public void setComboCliente(JComboBox<Cliente> comboCliente) {
+        this.comboCliente = comboCliente;
+    }
+
+    public JButton getBtnAdd() {
+        return btnAdd;
+    }
+
+    public void setBtnAdd(JButton btnAdd) {
+        this.btnAdd = btnAdd;
+    }
+
+    public JButton getBtnRemove() {
+        return btnRemove;
+    }
+
+    public void setBtnRemove(JButton btnRemove) {
+        this.btnRemove = btnRemove;
+    }
+
+    public JButton getBtnSalvar() {
+        return btnSalvar;
+    }
+
+    public void setBtnSalvar(JButton btnSalvar) {
+        this.btnSalvar = btnSalvar;
+    }
 }

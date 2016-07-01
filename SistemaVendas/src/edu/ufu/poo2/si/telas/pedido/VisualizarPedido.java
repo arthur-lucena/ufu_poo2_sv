@@ -5,17 +5,40 @@
  */
 package edu.ufu.poo2.si.telas.pedido;
 
+import edu.ufu.poo2.si.control.PedidoDAO;
+import edu.ufu.poo2.si.model.ItemPedido;
+import edu.ufu.poo2.si.model.Pedido;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.util.Collection;
+
 /**
  *
  * @author gmahlow
  */
 public class VisualizarPedido extends javax.swing.JFrame {
 
+    private PedidoDAO pedidoDAO;
+    private DefaultListModel<Pedido> pedidosList;
+
     /**
      * Creates new form VisualizarPedido
      */
-    public VisualizarPedido() {
+    public VisualizarPedido() throws ErroException {
+        this.pedidoDAO = new PedidoDAO();
+        this.pedidosList = new DefaultListModel<>();
         initComponents();
+        preencheListPedidos();
+    }
+
+    private void preencheListPedidos() throws ErroException {
+        Collection<Pedido> pedidos = pedidoDAO.buscarTodos();
+
+        pedidosList.removeAllElements();
+
+        for (Pedido pedido : pedidos)
+            pedidosList.addElement(pedido);
     }
 
     /**
@@ -29,17 +52,23 @@ public class VisualizarPedido extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         listPedidos = new javax.swing.JList<>();
-        btnEditar = new javax.swing.JButton();
+        btnVisualizar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
         labelSistema2 = new javax.swing.JLabel();
 
         listPedidos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listPedidos.setModel(pedidosList);
         jScrollPane1.setViewportView(listPedidos);
 
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+        btnVisualizar.setText("Visualizar");
+        btnVisualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
+                try {
+                    btnEditarActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -56,6 +85,7 @@ public class VisualizarPedido extends javax.swing.JFrame {
         labelSistema2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -69,7 +99,7 @@ public class VisualizarPedido extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnVisualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -81,7 +111,7 @@ public class VisualizarPedido extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEditar)
+                        .addComponent(btnVisualizar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnRemover))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -91,10 +121,62 @@ public class VisualizarPedido extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+    private void preencheTabelaItemPedido(Pedido pedido, CadastroPedido tela) {
+        for (ItemPedido itemPedido : pedido.getItens())
+            tela.insereItemTabela(itemPedido);
+    }
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnEditarActionPerformed
+        if (listPedidos.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um pedido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Pedido toBeEdited = listPedidos.getSelectedValue();
+
+        CadastroPedido cadastroPedido = new CadastroPedido();
+        cadastroPedido.setVisible(true);
+
+        cadastroPedido.getComboCliente().setEnabled(false);
+        cadastroPedido.getComboCliente().setSelectedItem(toBeEdited.getCliente());
+
+        cadastroPedido.getComboFormaPagamento().setEnabled(false);
+        cadastroPedido.getComboFormaPagamento().setSelectedItem(toBeEdited.getFormaPagamento());
+
+        cadastroPedido.getComboProduto().setEnabled(false);
+
+        cadastroPedido.getComboVendedor().setEnabled(false);
+        cadastroPedido.getComboVendedor().setSelectedItem(toBeEdited.getVendedor());
+
+        cadastroPedido.getTableItemPedido().setEnabled(false);
+        preencheTabelaItemPedido(toBeEdited, cadastroPedido);
+
+        cadastroPedido.getTextQtd().setEnabled(false);
+
+        cadastroPedido.getTextValorTotal().setEnabled(false);
+        cadastroPedido.getTextValorTotal().setValue(toBeEdited.getValorTotal());
+
+        cadastroPedido.getBtnAdd().setEnabled(false);
+        cadastroPedido.getBtnRemove().setEnabled(false);
+        cadastroPedido.getBtnSalvar().setEnabled(false);
+
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        if (listPedidos.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um pedido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Pedido toBeRemoved = listPedidos.getSelectedValue();
+
+        try {
+            pedidoDAO.delete(toBeRemoved.getCodigoPedido());
+            preencheListPedidos();
+            JOptionPane.showMessageDialog(null, "Pedido deletado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     /**
@@ -127,16 +209,21 @@ public class VisualizarPedido extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VisualizarPedido().setVisible(true);
+                try {
+                    new VisualizarPedido().setVisible(true);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnVisualizar;
     private javax.swing.JButton btnRemover;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelSistema2;
-    private javax.swing.JList<String> listPedidos;
+    private javax.swing.JList<Pedido> listPedidos;
     // End of variables declaration//GEN-END:variables
 }

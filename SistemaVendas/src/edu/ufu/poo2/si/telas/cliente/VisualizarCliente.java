@@ -56,6 +56,7 @@ public class VisualizarCliente extends javax.swing.JFrame {
         btnRemover = new javax.swing.JButton();
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         listClientes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listClientes.setModel(clientesList);
@@ -122,10 +123,11 @@ public class VisualizarCliente extends javax.swing.JFrame {
 
         Cliente toBeEdited = listClientes.getSelectedValue();
 
-        CadastroCliente cadastroCliente = new CadastroCliente(true, this);
+        CadastroCliente cadastroCliente = new CadastroCliente(true, this, toBeEdited);
         cadastroCliente.setVisible(true);
         cadastroCliente.getTextNome().setText(toBeEdited.getNome());
         cadastroCliente.getTextCpf().setText(toBeEdited.getCPF());
+        cadastroCliente.getTextCpf().setEnabled(false);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed

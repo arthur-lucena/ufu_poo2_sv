@@ -84,6 +84,7 @@ public class VisualizarProduto extends javax.swing.JFrame {
         });
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -127,7 +128,7 @@ public class VisualizarProduto extends javax.swing.JFrame {
 
         Produto produtoSelected = listProdutos.getSelectedValue();
 
-        CadastroProduto cadastroProduto = new CadastroProduto(true, this);
+        CadastroProduto cadastroProduto = new CadastroProduto(true, this, produtoSelected);
         cadastroProduto.setVisible(true);
         cadastroProduto.setCodigoEstoqueEditando(produtoSelected.getEstoque().getCodigoEstoque());
         cadastroProduto.setCodigoProdutoEditando(produtoSelected.getCodigoProduto());

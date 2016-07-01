@@ -15,7 +15,6 @@ import javax.swing.*;
 import java.math.BigDecimal;
 
 /**
- *
  * @author gmahlow
  */
 public class CadastroProduto extends javax.swing.JFrame {
@@ -23,6 +22,8 @@ public class CadastroProduto extends javax.swing.JFrame {
     private Boolean editando;
     private Long codigoProdutoEditando;
     private Long codigoEstoqueEditando;
+
+    private Produto produtoEditando;
 
     private ProdutoDAO produtoDAO;
     private DefaultComboBoxModel<EnumEstadoEstoque> estadoEstoqueList;
@@ -40,17 +41,18 @@ public class CadastroProduto extends javax.swing.JFrame {
         initComponents();
     }
 
-    public void preencheComboEstado()    {
+    public void preencheComboEstado() {
         this.estadoEstoqueList.removeAllElements();
         this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmEstoque);
         this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmFalta);
         this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmPreVenda);
     }
 
-    public CadastroProduto(Boolean editando, VisualizarProduto formBeforeOpenEdit) {
+    public CadastroProduto(Boolean editando, VisualizarProduto formBeforeOpenEdit, Produto produtoEditando) {
         this();
         this.editando = editando;
         this.formBeforeOpenEdit = formBeforeOpenEdit;
+        this.produtoEditando = produtoEditando;
     }
 
     /**
@@ -81,6 +83,7 @@ public class CadastroProduto extends javax.swing.JFrame {
         labelSistema1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         labelNome.setText("Nome");
 
@@ -110,76 +113,76 @@ public class CadastroProduto extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelSistema1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                        .addGap(8, 8, 8))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(textNome)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(comboEstado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(labelNome)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addComponent(labelQtd)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelEstado)
-                        .addGap(77, 77, 77))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(textQtdReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(textPreco)
-                        .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(labelQtdReserva)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelPreco)
-                .addGap(85, 85, 85))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(labelSistema1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                                                .addGap(8, 8, 8))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(textNome)
+                                                .addContainerGap())
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(comboEstado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(labelNome)
+                                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                                .addContainerGap())
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(54, 54, 54)
+                                                .addComponent(labelQtd)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(labelEstado)
+                                                .addGap(77, 77, 77))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(textQtdReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(textPreco)
+                                                .addContainerGap())))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(40, 40, 40)
+                                .addComponent(labelQtdReserva)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(labelPreco)
+                                .addGap(85, 85, 85))
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSistema1)
-                .addGap(13, 13, 13)
-                .addComponent(labelNome)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelQtd)
-                    .addComponent(labelEstado))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelQtdReserva)
-                    .addComponent(labelPreco))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textQtdReserva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(btnSalvar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(labelSistema1)
+                                .addGap(13, 13, 13)
+                                .addComponent(labelNome)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelQtd)
+                                        .addComponent(labelEstado))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(comboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelQtdReserva)
+                                        .addComponent(labelPreco))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(textQtdReserva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(textPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSalvar)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -198,27 +201,31 @@ public class CadastroProduto extends javax.swing.JFrame {
         BigDecimal preco = new BigDecimal(textPreco.getValue().toString());
         EnumEstadoEstoque estado = (EnumEstadoEstoque) comboEstado.getSelectedItem();
 
-        Estoque estoqueToBePersisted = new Estoque();
-        estoqueToBePersisted.setQuantidadeReservada(quantidadeReservada);
-        estoqueToBePersisted.setQuantidade(quantidade);
-        estoqueToBePersisted.setEstadoEstoque(estado);
-
-        Produto produtoToBePersisted = new Produto();
-        produtoToBePersisted.setNomeProduto(nome);
-        produtoToBePersisted.setEstoque(estoqueToBePersisted);
-        produtoToBePersisted.setPreco(preco);
-
         try {
             if (editando) {
-                produtoToBePersisted.setCodigoProduto(codigoProdutoEditando);
-                produtoToBePersisted.getEstoque().setCodigoEstoque(codigoEstoqueEditando);
+                produtoEditando.setNomeProduto(nome);
+                produtoEditando.setPreco(preco);
+                produtoEditando.getEstoque().setEstadoEstoque(estado);
+                produtoEditando.getEstoque().setQuantidade(quantidade);
+                produtoEditando.getEstoque().setQuantidadeReservada(quantidadeReservada);
 
-                produtoDAO.update(produtoToBePersisted);
+                produtoDAO.update(produtoEditando);
                 formBeforeOpenEdit.preencheProdutosList();
                 this.setVisible(false);
                 JOptionPane.showMessageDialog(null, "Produto atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
+
+            Estoque estoqueToBePersisted = new Estoque();
+            estoqueToBePersisted.setQuantidadeReservada(quantidadeReservada);
+            estoqueToBePersisted.setQuantidade(quantidade);
+            estoqueToBePersisted.setEstadoEstoque(estado);
+
+            Produto produtoToBePersisted = new Produto();
+            produtoToBePersisted.setNomeProduto(nome);
+            produtoToBePersisted.setEstoque(estoqueToBePersisted);
+            produtoToBePersisted.setPreco(preco);
+
             produtoDAO.insert(produtoToBePersisted);
 
             this.setVisible(false);

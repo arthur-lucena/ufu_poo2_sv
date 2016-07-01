@@ -79,6 +79,7 @@ public class VisualizarVendedor extends javax.swing.JFrame {
         jScrollPane1.setViewportView(listVendedores);
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,10 +123,11 @@ public class VisualizarVendedor extends javax.swing.JFrame {
 
         Vendedor toBeEdited = listVendedores.getSelectedValue();
 
-        CadastroVendedor cadastroVendedor = new CadastroVendedor(true, this);
+        CadastroVendedor cadastroVendedor = new CadastroVendedor(true, this, toBeEdited);
         cadastroVendedor.setVisible(true);
         cadastroVendedor.getTextNome().setText(toBeEdited.getNome());
         cadastroVendedor.getTextCpf().setText(toBeEdited.getCPF());
+        cadastroVendedor.getTextCpf().setEnabled(false);
         cadastroVendedor.getComboNivel().setSelectedItem(toBeEdited.getNivel());
     }//GEN-LAST:event_btnEditarActionPerformed
 

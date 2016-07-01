@@ -13,7 +13,6 @@ import edu.ufu.poo2.si.util.exceptions.ErroException;
 import javax.swing.*;
 
 /**
- *
  * @author gmahlow
  */
 public class CadastroVendedor extends javax.swing.JFrame {
@@ -21,6 +20,8 @@ public class CadastroVendedor extends javax.swing.JFrame {
     private Boolean editando;
     private VendedorDAO vendedorDAO;
     private DefaultComboBoxModel<EnumNivelVendedor> nivelVendedorList;
+
+    private Vendedor vendedorEditando;
 
     private VisualizarVendedor formBeforeOpenEdit;
 
@@ -42,10 +43,11 @@ public class CadastroVendedor extends javax.swing.JFrame {
         nivelVendedorList.addElement(EnumNivelVendedor.Ouro);
     }
 
-    public CadastroVendedor(Boolean editando, VisualizarVendedor formBeforeOpenEdit)   {
+    public CadastroVendedor(Boolean editando, VisualizarVendedor formBeforeOpenEdit, Vendedor vendedorEditando) {
         this();
         this.editando = editando;
         this.formBeforeOpenEdit = formBeforeOpenEdit;
+        this.vendedorEditando = vendedorEditando;
     }
 
     /**
@@ -93,46 +95,47 @@ public class CadastroVendedor extends javax.swing.JFrame {
         labelNivel.setText("Nível Vendedor");
 
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSistema, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addComponent(textNome)
-                    .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(textCpf)
-                    .addComponent(comboNivel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelNivel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(labelSistema, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                                        .addComponent(textNome)
+                                        .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(textCpf)
+                                        .addComponent(comboNivel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(labelNivel)
+                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSistema)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(labelNivel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(comboNivel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnSalvar)
-                .addContainerGap(15, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(labelSistema)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(labelNivel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(comboNivel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSalvar)
+                                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -148,21 +151,25 @@ public class CadastroVendedor extends javax.swing.JFrame {
         String nome = textNome.getText();
         EnumNivelVendedor nivelVendedor = (EnumNivelVendedor) comboNivel.getSelectedItem();
 
-        Vendedor toBePersisted = new Vendedor();
-        toBePersisted.setNome(nome);
-        toBePersisted.setCPF(cpf);
-        toBePersisted.setNivel(nivelVendedor);
         try {
-            if (vendedorDAO.buscar(cpf) == null) {
-                vendedorDAO.insert(toBePersisted);
-                this.setVisible(false);
-                JOptionPane.showMessageDialog(null, "Vendedor criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            } else if (editando) {
-                vendedorDAO.update(toBePersisted);
+            if (editando) {
+                vendedorEditando.setNome(nome);
+                vendedorEditando.setNivel(nivelVendedor);
+
+                vendedorDAO.update(vendedorEditando);
                 formBeforeOpenEdit.preencheComponenteListVendedores();
                 this.setVisible(false);
                 JOptionPane.showMessageDialog(null, "Vendedor atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            } else if (vendedorDAO.buscar(cpf) == null) {
+                Vendedor toBePersisted = new Vendedor();
+                toBePersisted.setNome(nome);
+                toBePersisted.setCPF(cpf);
+                toBePersisted.setNivel(nivelVendedor);
+
+                vendedorDAO.insert(toBePersisted);
+                this.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Vendedor criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
