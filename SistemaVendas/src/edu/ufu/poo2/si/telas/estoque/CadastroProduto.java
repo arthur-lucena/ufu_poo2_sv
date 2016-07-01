@@ -5,6 +5,15 @@
  */
 package edu.ufu.poo2.si.telas.estoque;
 
+import edu.ufu.poo2.si.control.ProdutoDAO;
+import edu.ufu.poo2.si.model.Estoque;
+import edu.ufu.poo2.si.model.Produto;
+import edu.ufu.poo2.si.util.enums.EnumEstadoEstoque;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.math.BigDecimal;
+
 /**
  *
  * @author gmahlow
@@ -12,17 +21,36 @@ package edu.ufu.poo2.si.telas.estoque;
 public class CadastroProduto extends javax.swing.JFrame {
 
     private Boolean editando;
+    private Long codigoProdutoEditando;
+    private Long codigoEstoqueEditando;
+
+    private ProdutoDAO produtoDAO;
+    private DefaultComboBoxModel<EnumEstadoEstoque> estadoEstoqueList;
+
+    private VisualizarProduto formBeforeOpenEdit;
 
     /**
      * Creates new form CadastroProduto
      */
     public CadastroProduto() {
+        this.editando = false;
+        this.estadoEstoqueList = new DefaultComboBoxModel<>();
+        this.produtoDAO = new ProdutoDAO();
+        preencheComboEstado();
         initComponents();
     }
 
-    public CadastroProduto(Boolean editando) {
+    public void preencheComboEstado()    {
+        this.estadoEstoqueList.removeAllElements();
+        this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmEstoque);
+        this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmFalta);
+        this.estadoEstoqueList.addElement(EnumEstadoEstoque.EmPreVenda);
+    }
+
+    public CadastroProduto(Boolean editando, VisualizarProduto formBeforeOpenEdit) {
         this();
         this.editando = editando;
+        this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
     /**
@@ -41,7 +69,7 @@ public class CadastroProduto extends javax.swing.JFrame {
         labelQtd = new javax.swing.JLabel();
         labelEstado = new javax.swing.JLabel();
         textQtdReserva = new javax.swing.JFormattedTextField();
-        textQtd1 = new javax.swing.JFormattedTextField();
+        textQtd = new javax.swing.JFormattedTextField();
         labelQtdReserva = new javax.swing.JLabel();
         textPreco = new javax.swing.JFormattedTextField();
         labelPreco = new javax.swing.JLabel();
@@ -54,7 +82,7 @@ public class CadastroProduto extends javax.swing.JFrame {
 
         labelNome.setText("Nome");
 
-        comboEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em Estoque", "Em Falta", "Em Pré-Venda" }));
+        comboEstado.setModel(estadoEstoqueList);
 
         labelQtd.setText("Quantidade");
 
@@ -62,7 +90,7 @@ public class CadastroProduto extends javax.swing.JFrame {
 
         textQtdReserva.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
 
-        textQtd1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        textQtd.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
 
         labelQtdReserva.setText("Quantidade Reserva");
 
@@ -93,7 +121,7 @@ public class CadastroProduto extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(textQtd1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(comboEstado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
@@ -138,7 +166,7 @@ public class CadastroProduto extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textQtd1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelQtdReserva)
@@ -157,6 +185,50 @@ public class CadastroProduto extends javax.swing.JFrame {
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
         // TODO add your handling code here:
+        if (textQtd.getValue() == null || textNome.getText().isEmpty() || textQtdReserva.getValue() == null
+                || textPreco.getValue() == null) {
+            JOptionPane.showMessageDialog(null, "Você precisa preencher todos os campos corretamente!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String nome = textNome.getText();
+        Integer quantidade = Integer.valueOf(textQtd.getValue().toString());
+        Integer quantidadeReservada = Integer.valueOf(textQtdReserva.getValue().toString());
+        BigDecimal preco = new BigDecimal(textPreco.getValue().toString());
+        EnumEstadoEstoque estado = (EnumEstadoEstoque) comboEstado.getSelectedItem();
+
+        Estoque estoqueToBePersisted = new Estoque();
+        estoqueToBePersisted.setQuantidadeReservada(quantidadeReservada);
+        estoqueToBePersisted.setQuantidade(quantidade);
+        estoqueToBePersisted.setEstadoEstoque(estado);
+
+        Produto produtoToBePersisted = new Produto();
+        produtoToBePersisted.setNomeProduto(nome);
+        produtoToBePersisted.setEstoque(estoqueToBePersisted);
+        produtoToBePersisted.setPreco(preco);
+
+        try {
+            if (editando) {
+                produtoToBePersisted.setCodigoProduto(codigoProdutoEditando);
+                produtoToBePersisted.getEstoque().setCodigoEstoque(codigoEstoqueEditando);
+
+                produtoDAO.update(produtoToBePersisted);
+                formBeforeOpenEdit.preencheProdutosList();
+                this.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Produto atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            produtoDAO.insert(produtoToBePersisted);
+
+            this.setVisible(false);
+            JOptionPane.showMessageDialog(null, "Produto criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**
@@ -196,7 +268,7 @@ public class CadastroProduto extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSalvar;
-    private javax.swing.JComboBox<String> comboEstado;
+    private javax.swing.JComboBox<EnumEstadoEstoque> comboEstado;
     private javax.swing.JLabel labelEstado;
     private javax.swing.JLabel labelNome;
     private javax.swing.JLabel labelPreco;
@@ -205,7 +277,63 @@ public class CadastroProduto extends javax.swing.JFrame {
     private javax.swing.JLabel labelSistema1;
     private javax.swing.JTextField textNome;
     private javax.swing.JFormattedTextField textPreco;
-    private javax.swing.JFormattedTextField textQtd1;
+    private javax.swing.JFormattedTextField textQtd;
     private javax.swing.JFormattedTextField textQtdReserva;
     // End of variables declaration//GEN-END:variables
+
+    public JFormattedTextField getTextQtdReserva() {
+        return textQtdReserva;
+    }
+
+    public void setTextQtdReserva(JFormattedTextField textQtdReserva) {
+        this.textQtdReserva = textQtdReserva;
+    }
+
+    public JFormattedTextField getTextQtd() {
+        return textQtd;
+    }
+
+    public void setTextQtd(JFormattedTextField textQtd) {
+        this.textQtd = textQtd;
+    }
+
+    public JFormattedTextField getTextPreco() {
+        return textPreco;
+    }
+
+    public void setTextPreco(JFormattedTextField textPreco) {
+        this.textPreco = textPreco;
+    }
+
+    public JTextField getTextNome() {
+        return textNome;
+    }
+
+    public void setTextNome(JTextField textNome) {
+        this.textNome = textNome;
+    }
+
+    public JComboBox<EnumEstadoEstoque> getComboEstado() {
+        return comboEstado;
+    }
+
+    public void setComboEstado(JComboBox<EnumEstadoEstoque> comboEstado) {
+        this.comboEstado = comboEstado;
+    }
+
+    public Long getCodigoEstoqueEditando() {
+        return codigoEstoqueEditando;
+    }
+
+    public void setCodigoEstoqueEditando(Long codigoEstoqueEditando) {
+        this.codigoEstoqueEditando = codigoEstoqueEditando;
+    }
+
+    public Long getCodigoProdutoEditando() {
+        return codigoProdutoEditando;
+    }
+
+    public void setCodigoProdutoEditando(Long codigoProdutoEditando) {
+        this.codigoProdutoEditando = codigoProdutoEditando;
+    }
 }

@@ -22,6 +22,8 @@ public class CadastroVendedor extends javax.swing.JFrame {
     private VendedorDAO vendedorDAO;
     private DefaultComboBoxModel<EnumNivelVendedor> nivelVendedorList;
 
+    private VisualizarVendedor formBeforeOpenEdit;
+
     /**
      * Creates new form CadastroVendedor
      */
@@ -39,9 +41,10 @@ public class CadastroVendedor extends javax.swing.JFrame {
         nivelVendedorList.addElement(EnumNivelVendedor.Ouro);
     }
 
-    public CadastroVendedor(Boolean editando)   {
+    public CadastroVendedor(Boolean editando, VisualizarVendedor formBeforeOpenEdit)   {
         this();
         this.editando = true;
+        this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
     /**
@@ -150,15 +153,18 @@ public class CadastroVendedor extends javax.swing.JFrame {
         try {
             if (vendedorDAO.buscar(cpf) == null) {
                 vendedorDAO.insert(toBePersisted);
-
+                this.setVisible(false);
                 JOptionPane.showMessageDialog(null, "Vendedor criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
                 return;
             } else if (editando) {
                 vendedorDAO.update(toBePersisted);
+                formBeforeOpenEdit.preencheComponenteListVendedores();
+                this.setVisible(false);
                 JOptionPane.showMessageDialog(null, "Vendedor atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
+            this.setVisible(false);
             JOptionPane.showMessageDialog(null, "Já existe um Vendedor com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
         } catch (ErroException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);

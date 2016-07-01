@@ -19,6 +19,8 @@ public class CadastroCliente extends javax.swing.JFrame {
     private Boolean editando;
     private ClienteDAO clienteDAO;
 
+    private VisualizarCliente formBeforeOpenEdit;
+
     /**
      * Creates new form Teste
      */
@@ -28,9 +30,10 @@ public class CadastroCliente extends javax.swing.JFrame {
         this.clienteDAO = new ClienteDAO();
     }
 
-    public CadastroCliente(Boolean editando) {
+    public CadastroCliente(Boolean editando, VisualizarCliente formBeforeOpenEdit) {
         this();
         this.editando = editando;
+        this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
     /**
@@ -125,15 +128,18 @@ public class CadastroCliente extends javax.swing.JFrame {
         try {
 	        if (clienteDAO.buscar(cpf) == null) {
 	            clienteDAO.insert(toBePersisted);
-	
+	            this.setVisible(false);
 	            JOptionPane.showMessageDialog(null, "Cliente criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
 	            return;
 	        } else if (editando) {
 	            clienteDAO.update(toBePersisted);
+                formBeforeOpenEdit.preencheComponenteListClientes();
+                this.setVisible(false);
 	            JOptionPane.showMessageDialog(null, "Cliente atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
 	            return;
 	        }
-	
+
+            this.setVisible(false);
 	        JOptionPane.showMessageDialog(null, "Já existe um cliente com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
         } catch (ErroException e) {
         	JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);

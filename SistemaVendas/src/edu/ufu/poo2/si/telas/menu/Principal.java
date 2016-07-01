@@ -88,10 +88,15 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        btnVisualizarEstoque.setText("Visualizar Estoque");
+        btnVisualizarEstoque.setText("Visualizar Produtos");
         btnVisualizarEstoque.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVisualizarEstoqueActionPerformed(evt);
+                try {
+                    btnVisualizarEstoqueActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -208,7 +213,7 @@ public class Principal extends javax.swing.JFrame {
         new VisualizarPedido().setVisible(true);
     }//GEN-LAST:event_btnVisualizarPedidoActionPerformed
 
-    private void btnVisualizarEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVisualizarEstoqueActionPerformed
+    private void btnVisualizarEstoqueActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarEstoqueActionPerformed
         // TODO add your handling code here:
         new VisualizarProduto().setVisible(true);
     }//GEN-LAST:event_btnVisualizarEstoqueActionPerformed

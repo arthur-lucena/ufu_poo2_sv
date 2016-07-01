@@ -17,6 +17,7 @@ public class CadastroPedido extends javax.swing.JFrame {
      * Creates new form CadastroPedido
      */
     public CadastroPedido() {
+        this.editando = false;
         initComponents();
     }
 

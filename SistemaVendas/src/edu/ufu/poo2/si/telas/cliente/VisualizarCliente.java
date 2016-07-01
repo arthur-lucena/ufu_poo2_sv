@@ -116,9 +116,14 @@ public class VisualizarCliente extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
+        if (listClientes.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um cliente!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Cliente toBeEdited = listClientes.getSelectedValue();
 
-        CadastroCliente cadastroCliente = new CadastroCliente(true);
+        CadastroCliente cadastroCliente = new CadastroCliente(true, this);
         cadastroCliente.setVisible(true);
         cadastroCliente.getTextNome().setText(toBeEdited.getNome());
         cadastroCliente.getTextCpf().setText(toBeEdited.getCPF());
@@ -126,6 +131,11 @@ public class VisualizarCliente extends javax.swing.JFrame {
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         // TODO add your handling code here:
+        if (listClientes.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um cliente!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Cliente toBeRemoved = listClientes.getSelectedValue();
         try {
             clienteDAO.delete(toBeRemoved.getCPF());

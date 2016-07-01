@@ -114,9 +114,14 @@ public class VisualizarVendedor extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
+        if (listVendedores.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um vendedor!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Vendedor toBeEdited = listVendedores.getSelectedValue();
 
-        CadastroVendedor cadastroVendedor = new CadastroVendedor(true);
+        CadastroVendedor cadastroVendedor = new CadastroVendedor(true, this);
         cadastroVendedor.setVisible(true);
         cadastroVendedor.getTextNome().setText(toBeEdited.getNome());
         cadastroVendedor.getTextCpf().setText(toBeEdited.getCPF());
@@ -125,6 +130,11 @@ public class VisualizarVendedor extends javax.swing.JFrame {
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         // TODO add your handling code here:
+        if (listVendedores.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um vendedor!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Vendedor toBeRemoved = listVendedores.getSelectedValue();
         try {
             vendedorDAO.delete(toBeRemoved.getCPF());

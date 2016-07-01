@@ -5,17 +5,38 @@
  */
 package edu.ufu.poo2.si.telas.estoque;
 
+import edu.ufu.poo2.si.control.ProdutoDAO;
+import edu.ufu.poo2.si.model.Produto;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.util.Collection;
+
 /**
- *
  * @author gmahlow
  */
 public class VisualizarProduto extends javax.swing.JFrame {
 
+    private ProdutoDAO produtoDAO;
+    private DefaultListModel<Produto> produtosList;
+
     /**
      * Creates new form VisualizarProduto
      */
-    public VisualizarProduto() {
+    public VisualizarProduto() throws ErroException {
+        this.produtoDAO = new ProdutoDAO();
+        this.produtosList = new DefaultListModel<>();
+        preencheProdutosList();
         initComponents();
+    }
+
+    public void preencheProdutosList() throws ErroException {
+        Collection<Produto> produtos = produtoDAO.buscarTodos();
+
+        produtosList.removeAllElements();
+
+        for (Produto produto : produtos)
+            produtosList.addElement(produto);
     }
 
     /**
@@ -44,50 +65,94 @@ public class VisualizarProduto extends javax.swing.JFrame {
         labelSistema2.setText("Sistema de Vendas");
         labelSistema2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        listProdutos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(listProdutos);
+        listProdutos.setModel(produtosList);
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnRemover.setText("Remover");
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSistema2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(labelSistema2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSistema2)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEditar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnRemover)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(labelSistema2)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(btnEditar)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(btnRemover))
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        if (listProdutos.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um produto!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Produto produtoSelected = listProdutos.getSelectedValue();
+
+        CadastroProduto cadastroProduto = new CadastroProduto(true, this);
+        cadastroProduto.setVisible(true);
+        cadastroProduto.setCodigoEstoqueEditando(produtoSelected.getEstoque().getCodigoEstoque());
+        cadastroProduto.setCodigoProdutoEditando(produtoSelected.getCodigoProduto());
+        cadastroProduto.getComboEstado().setSelectedItem(produtoSelected.getEstoque());
+        cadastroProduto.getTextNome().setText(produtoSelected.getNomeProduto());
+        cadastroProduto.getTextPreco().setValue(produtoSelected.getPreco());
+        cadastroProduto.getTextQtd().setValue(produtoSelected.getEstoque().getQuantidade());
+        cadastroProduto.getTextQtdReserva().setValue(produtoSelected.getEstoque().getQuantidadeReservada());
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        // TODO add your handling code here:
+        if (listProdutos.getSelectedValue() == null)  {
+            JOptionPane.showMessageDialog(null, "Selecione um produto!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Produto toBeRemoved = listProdutos.getSelectedValue();
+        try {
+            produtoDAO.delete(toBeRemoved.getCodigoProduto());
+            preencheProdutosList();
+            JOptionPane.showMessageDialog(null, "Produto deletado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnRemoverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -119,7 +184,12 @@ public class VisualizarProduto extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VisualizarProduto().setVisible(true);
+                try {
+                    new VisualizarProduto().setVisible(true);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -130,6 +200,6 @@ public class VisualizarProduto extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelSistema1;
     private javax.swing.JLabel labelSistema2;
-    private javax.swing.JList<String> listProdutos;
+    private javax.swing.JList<Produto> listProdutos;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,14 +7,16 @@ import edu.ufu.poo2.si.util.estadoEstoque.EmFalta;
 import edu.ufu.poo2.si.util.estadoEstoque.EmPreVenda;
 
 public enum EnumEstadoEstoque {
-    EmEstoque(new EmEstoque()),
-    EmFalta(new EmFalta()),
-    EmPreVenda(new EmPreVenda());
+    EmEstoque(new EmEstoque(), "Em Estoque"),
+    EmFalta(new EmFalta(), "Em Falta"),
+    EmPreVenda(new EmPreVenda(), "Em Pré-Venda");
 	
 	private EstadoEstoque estadoEstoque;
+    private String nomeEstado;
     
-    EnumEstadoEstoque (EstadoEstoque estadoEstoque) {
+    EnumEstadoEstoque (EstadoEstoque estadoEstoque, String nomeEstado) {
     	this.estadoEstoque = estadoEstoque;
+        this.nomeEstado = nomeEstado;
     }
 
     public static EnumEstadoEstoque getEstadoEstoque(Integer numero) {
@@ -30,5 +32,10 @@ public enum EnumEstadoEstoque {
     public EstadoEstoque getStateClass(Estoque estoque) {
     	estadoEstoque.estoque = estoque;
     	return estadoEstoque;
+    }
+
+    @Override
+    public String toString() {
+        return nomeEstado;
     }
 }
