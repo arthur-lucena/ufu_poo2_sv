@@ -1,9 +1,15 @@
 package edu.ufu.poo2.si.util.enums;
 
 public enum EnumFormaPagamento {
-    Boleto,
-    Cartao,
-    Dinheiro;
+    Boleto(FormaPagamentoBoleto()),
+    Cartao((FormaPagamentoCartao()),
+    Dinheiro((FormaPagamentoDinheiro());
+    
+    private FormaPagamento formaPagamento;
+    
+    EnumFormaPagamento (FormaPagamento formaPagamento) {
+    	this.formaPagamento = formaPagamento;
+    }
 
     public static EnumFormaPagamento getFormaPagamento(Integer numero) {
         for (EnumFormaPagamento factory : values()) {

@@ -5,7 +5,7 @@ import edu.ufu.poo2.si.api.FormaPagamento;
 public class FormaPagamentoDinheiro implements FormaPagamento {
 
     public void receber() {
-
+        System.out.println("Forma de Pagamento: Dinheiro");
     }
 
 }
