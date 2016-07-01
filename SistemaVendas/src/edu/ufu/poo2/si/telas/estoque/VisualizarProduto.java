@@ -117,7 +117,6 @@ public class VisualizarProduto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // TODO add your handling code here:
         if (listProdutos.getSelectedValue() == null)  {
             JOptionPane.showMessageDialog(null, "Selecione um produto!", "Erro!", JOptionPane.ERROR_MESSAGE);
             return;
@@ -137,7 +136,6 @@ public class VisualizarProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
-        // TODO add your handling code here:
         if (listProdutos.getSelectedValue() == null)  {
             JOptionPane.showMessageDialog(null, "Selecione um produto!", "Erro!", JOptionPane.ERROR_MESSAGE);
             return;

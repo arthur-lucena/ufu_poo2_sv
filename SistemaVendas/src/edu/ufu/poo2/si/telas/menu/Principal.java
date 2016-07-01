@@ -189,42 +189,34 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVisualizarClientesActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarClientesActionPerformed
-        // TODO add your handling code here:
         new VisualizarCliente().setVisible(true);
     }//GEN-LAST:event_btnVisualizarClientesActionPerformed
 
     private void btnCadastroClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroClienteActionPerformed
-        // TODO add your handling code here:
         new CadastroCliente().setVisible(true);
     }//GEN-LAST:event_btnCadastroClienteActionPerformed
 
     private void btnCadastrarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarProdutoActionPerformed
-        // TODO add your handling code here:
         new CadastroProduto().setVisible(true);
     }//GEN-LAST:event_btnCadastrarProdutoActionPerformed
 
     private void btnCadastrarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarPedidoActionPerformed
-        // TODO add your handling code here:
         new CadastroPedido().setVisible(true);
     }//GEN-LAST:event_btnCadastrarPedidoActionPerformed
 
     private void btnVisualizarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVisualizarPedidoActionPerformed
-        // TODO add your handling code here:
         new VisualizarPedido().setVisible(true);
     }//GEN-LAST:event_btnVisualizarPedidoActionPerformed
 
     private void btnVisualizarEstoqueActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarEstoqueActionPerformed
-        // TODO add your handling code here:
         new VisualizarProduto().setVisible(true);
     }//GEN-LAST:event_btnVisualizarEstoqueActionPerformed
 
     private void btnCadastrarVendedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarVendedorActionPerformed
-        // TODO add your handling code here:
         new CadastroVendedor().setVisible(true);
     }//GEN-LAST:event_btnCadastrarVendedorActionPerformed
 
     private void btnVisualizarVendedorActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarVendedorActionPerformed
-        // TODO add your handling code here:
         new VisualizarVendedor().setVisible(true);
     }//GEN-LAST:event_btnVisualizarVendedorActionPerformed
 
