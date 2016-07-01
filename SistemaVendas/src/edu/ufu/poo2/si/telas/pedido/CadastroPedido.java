@@ -152,7 +152,7 @@ public class CadastroPedido extends javax.swing.JFrame {
 
         labelFormaPagamento.setText("Forma de Pagamento");
 
-        textValorTotal.setEditable(false);
+        textValorTotal.setEnabled(false);
 
         jLabel1.setText("Valor Total");
 
