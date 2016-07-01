@@ -10,6 +10,7 @@ import edu.ufu.poo2.si.control.*;
 import edu.ufu.poo2.si.model.*;
 import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
 import edu.ufu.poo2.si.util.exceptions.ErroException;
+import edu.ufu.poo2.si.util.exceptions.ValidacaoException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +31,7 @@ public class CadastroPedido extends javax.swing.JFrame {
     private ClienteDAO clienteDAO;
     private VendedorDAO vendedorDAO;
     private ProdutoDAO produtoDAO;
+    private PedidoDAO pedidoDAO;
 
     private DefaultComboBoxModel<EnumFormaPagamento> formaPagamentoList;
     private DefaultComboBoxModel<Cliente> clienteList;
@@ -44,6 +46,7 @@ public class CadastroPedido extends javax.swing.JFrame {
         this.clienteDAO = new ClienteDAO();
         this.vendedorDAO = new VendedorDAO();
         this.produtoDAO = new ProdutoDAO();
+        this.pedidoDAO = new PedidoDAO();
         this.formaPagamentoList = new DefaultComboBoxModel<>();
         this.clienteList = new DefaultComboBoxModel<>();
         this.vendedorList = new DefaultComboBoxModel<>();
@@ -317,10 +320,15 @@ public class CadastroPedido extends javax.swing.JFrame {
             toBePersisted.setFormaPagamento(formaPagamento);
             toBePersisted.setValorTotal(valorTotal);
 
-            venda.gravarPedido(toBePersisted);
+            setNivelVendedor(toBePersisted);
+
+            venda.fechaVenda(toBePersisted);
             this.setVisible(false);
             JOptionPane.showMessageDialog(null, "Pedido criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
         } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch(ValidacaoException e)   {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
@@ -333,6 +341,11 @@ public class CadastroPedido extends javax.swing.JFrame {
 
     public void insereItemTabela(ItemPedido itemPedido)  {
         itemPedidoList.addRow(new Object[]{itemPedido.getProduto(), itemPedido.getQuantidade(), itemPedido.getValor(), itemPedido.getDesconto()});
+    }
+
+    public void setNivelVendedor(Pedido pedido) {
+        for (ItemPedido itemPedido : pedido.getItens())
+            itemPedido.setNivelVendedoLibera(vendedorFromLogin.getNivel());
     }
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -359,21 +372,6 @@ public class CadastroPedido extends javax.swing.JFrame {
 
         atualizaValorTotal();
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private Pedido getPedidoTela() {
-        Cliente cliente = (Cliente) comboCliente.getSelectedItem();
-        Vendedor vendedor = (Vendedor) comboVendedor.getSelectedItem();
-        EnumFormaPagamento formaPagamento = (EnumFormaPagamento) comboFormaPagamento.getSelectedItem();
-        List<ItemPedido> itensPedido = getItemsPedido();
-
-        Pedido pedidoTela = new Pedido();
-        pedidoTela.setCliente(cliente);
-        pedidoTela.setVendedor(vendedor);
-        pedidoTela.setFormaPagamento(formaPagamento);
-        pedidoTela.setItens(itensPedido);
-
-        return pedidoTela;
-    }
 
     private void atualizaValorTotal() {
         Integer qtdRows = tableItemPedido.getRowCount();
