@@ -325,10 +325,7 @@ public class CadastroPedido extends javax.swing.JFrame {
             venda.fechaVenda(toBePersisted);
             this.setVisible(false);
             JOptionPane.showMessageDialog(null, "Pedido criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
-        } catch (ErroException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch(ValidacaoException e)   {
+        } catch (ErroException | ValidacaoException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
