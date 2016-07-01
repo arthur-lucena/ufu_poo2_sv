@@ -18,8 +18,17 @@ public class Venda {
 	public void fechaVenda(Pedido pedido) throws ErroException, ValidacaoException {
 		avaliaDescontoDosItensPedido(pedido);		
 		verificarNivelVendedor(pedido);
-		// TODO validar pagamento
 		faturarPedido(pedido);
+		recebePedido(pedido);
+	}
+	
+	/**
+	 * Avisa ao caixa qual será a forma de recebimento
+	 * @param pedido
+	 */
+	public void recebePedido(Pedido pedido) {
+		System.out.println("recebendo...");
+		System.out.println(pedido.getFormaPagamento().getClassFormaPagamento().receber());
 	}
 	
 	/**

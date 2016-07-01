@@ -38,13 +38,13 @@ public class Teste {
 		try {
 			Pedido p = new Pedido();
 			p.setFormaPagamento(EnumFormaPagamento.Dinheiro);
-			p.setCliente(clienteDAO.buscar("02172030945"));
-			p.setVendedor(vendedorDAO.buscar("03587339872"));
+			p.setCliente(clienteDAO.buscar("02823163107")); // cliente
+			p.setVendedor(vendedorDAO.buscar("03826926242")); // vendedor
 
 			ItemPedido ip = new ItemPedido();
-			ip.setQuantidade(1);
+			ip.setProduto(produtoDAO.buscar(8l)); // produto
+			ip.setQuantidade(2);
 			ip.setValor(new BigDecimal(96));
-			ip.setProduto(produtoDAO.buscar(8l));
 
 			p.setValorTotal(ip.getValor().multiply(BigDecimal.valueOf(ip.getQuantidade())));
 
