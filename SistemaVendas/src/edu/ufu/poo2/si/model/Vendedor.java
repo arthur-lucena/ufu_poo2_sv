@@ -36,7 +36,7 @@ public class Vendedor {
 
     @Override
     public String toString() {
-        return "Vendedor [Nome=" + Nome + ", CPF=" + CPF + ", nivel=" + nivel + "]";
+        return Nome;
     }
 
 

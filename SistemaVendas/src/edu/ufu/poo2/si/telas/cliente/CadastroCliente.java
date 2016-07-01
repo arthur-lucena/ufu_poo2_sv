@@ -17,12 +17,15 @@ import javax.swing.*;
 public class CadastroCliente extends javax.swing.JFrame {
 
     private Boolean editando;
+    private ClienteDAO clienteDAO;
 
     /**
      * Creates new form Teste
      */
     public CadastroCliente() {
         initComponents();
+        this.editando = false;
+        this.clienteDAO = new ClienteDAO();
     }
 
     public CadastroCliente(Boolean editando) {
@@ -113,8 +116,6 @@ public class CadastroCliente extends javax.swing.JFrame {
             return;
         }
 
-        ClienteDAO clienteDAO = new ClienteDAO();
-
         String cpf = textCpf.getText();
         String nome = textNome.getText();
 
@@ -188,4 +189,21 @@ public class CadastroCliente extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField textCpf;
     private javax.swing.JTextField textNome;
     // End of variables declaration//GEN-END:variables
+
+
+    public JTextField getTextNome() {
+        return textNome;
+    }
+
+    public void setTextNome(JTextField textNome) {
+        this.textNome = textNome;
+    }
+
+    public JFormattedTextField getTextCpf() {
+        return textCpf;
+    }
+
+    public void setTextCpf(JFormattedTextField textCpf) {
+        this.textCpf = textCpf;
+    }
 }

@@ -11,9 +11,13 @@ import edu.ufu.poo2.si.telas.estoque.CadastroProduto;
 import edu.ufu.poo2.si.telas.estoque.VisualizarProduto;
 import edu.ufu.poo2.si.telas.pedido.CadastroPedido;
 import edu.ufu.poo2.si.telas.pedido.VisualizarPedido;
+import edu.ufu.poo2.si.telas.vendedor.CadastroVendedor;
+import edu.ufu.poo2.si.telas.vendedor.VisualizarVendedor;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
 
 /**
- *
  * @author gmahlow
  */
 public class Principal extends javax.swing.JFrame {
@@ -42,6 +46,8 @@ public class Principal extends javax.swing.JFrame {
         btnVisualizarEstoque = new javax.swing.JButton();
         btnCadastrarPedido = new javax.swing.JButton();
         btnVisualizarPedido = new javax.swing.JButton();
+        btnCadastrarVendedor = new javax.swing.JButton();
+        btnVisualizarVendedor = new javax.swing.JButton();
 
         labelSistema.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         labelSistema.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -61,7 +67,12 @@ public class Principal extends javax.swing.JFrame {
         btnVisualizarClientes.setText("Visualizar Clientes");
         btnVisualizarClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVisualizarClientesActionPerformed(evt);
+                try {
+                    btnVisualizarClientesActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -98,6 +109,25 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        btnCadastrarVendedor.setText("Cadastrar Vendedor");
+        btnCadastrarVendedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastrarVendedorActionPerformed(evt);
+            }
+        });
+
+        btnVisualizarVendedor.setText("Visualizar Vendedor");
+        btnVisualizarVendedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+                    btnVisualizarVendedorActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -109,17 +139,19 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnCadastroCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnVisualizarClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnVisualizarClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnCadastrarPedido, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCadastrarPedido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(btnCadastrarProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnCadastrarProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnCadastrarVendedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnVisualizarEstoque, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-                            .addComponent(btnVisualizarPedido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btnVisualizarPedido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnVisualizarVendedor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -139,7 +171,11 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCadastrarPedido)
                     .addComponent(btnVisualizarPedido))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnCadastrarVendedor)
+                    .addComponent(btnVisualizarVendedor))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnCadastroCliente.getAccessibleContext().setAccessibleName("btnCadastroCliente");
@@ -147,7 +183,7 @@ public class Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnVisualizarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVisualizarClientesActionPerformed
+    private void btnVisualizarClientesActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarClientesActionPerformed
         // TODO add your handling code here:
         new VisualizarCliente().setVisible(true);
     }//GEN-LAST:event_btnVisualizarClientesActionPerformed
@@ -176,6 +212,16 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         new VisualizarProduto().setVisible(true);
     }//GEN-LAST:event_btnVisualizarEstoqueActionPerformed
+
+    private void btnCadastrarVendedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarVendedorActionPerformed
+        // TODO add your handling code here:
+        new CadastroVendedor().setVisible(true);
+    }//GEN-LAST:event_btnCadastrarVendedorActionPerformed
+
+    private void btnVisualizarVendedorActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnVisualizarVendedorActionPerformed
+        // TODO add your handling code here:
+        new VisualizarVendedor().setVisible(true);
+    }//GEN-LAST:event_btnVisualizarVendedorActionPerformed
 
     /**
      * @param args the command line arguments
@@ -215,10 +261,12 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrarPedido;
     private javax.swing.JButton btnCadastrarProduto;
+    private javax.swing.JButton btnCadastrarVendedor;
     private javax.swing.JButton btnCadastroCliente;
     private javax.swing.JButton btnVisualizarClientes;
     private javax.swing.JButton btnVisualizarEstoque;
     private javax.swing.JButton btnVisualizarPedido;
+    private javax.swing.JButton btnVisualizarVendedor;
     private javax.swing.JLabel labelSistema;
     private javax.swing.JLabel labelSistema1;
     // End of variables declaration//GEN-END:variables

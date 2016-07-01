@@ -5,6 +5,13 @@
  */
 package edu.ufu.poo2.si.telas.vendedor;
 
+import edu.ufu.poo2.si.control.VendedorDAO;
+import edu.ufu.poo2.si.model.Vendedor;
+import edu.ufu.poo2.si.util.enums.EnumNivelVendedor;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+
 /**
  *
  * @author gmahlow
@@ -12,12 +19,24 @@ package edu.ufu.poo2.si.telas.vendedor;
 public class CadastroVendedor extends javax.swing.JFrame {
 
     private Boolean editando;
+    private VendedorDAO vendedorDAO;
+    private DefaultComboBoxModel<EnumNivelVendedor> nivelVendedorList;
 
     /**
      * Creates new form CadastroVendedor
      */
     public CadastroVendedor() {
+        this.nivelVendedorList = new DefaultComboBoxModel<>();
+        this.vendedorDAO = new VendedorDAO();
+        this.editando = false;
+        preencheComboBoxNivel();
         initComponents();
+    }
+
+    public void preencheComboBoxNivel() {
+        nivelVendedorList.addElement(EnumNivelVendedor.Prata);
+        nivelVendedorList.addElement(EnumNivelVendedor.Platina);
+        nivelVendedorList.addElement(EnumNivelVendedor.Ouro);
     }
 
     public CadastroVendedor(Boolean editando)   {
@@ -44,6 +63,11 @@ public class CadastroVendedor extends javax.swing.JFrame {
         labelNivel = new javax.swing.JLabel();
 
         btnSalvar.setText("Salvar");
+        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalvarActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("CPF");
 
@@ -60,7 +84,7 @@ public class CadastroVendedor extends javax.swing.JFrame {
         labelSistema.setText("Sistema de Vendas");
         labelSistema.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        comboNivel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nível 1", "Nível 2" }));
+        comboNivel.setModel(nivelVendedorList);
 
         labelNivel.setText("Nível Vendedor");
 
@@ -108,6 +132,43 @@ public class CadastroVendedor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        // TODO add your handling code here:
+        if (textCpf.getText().length() < 14 || textNome.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Você precisa preencher todos os campos corretamente!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String cpf = textCpf.getText();
+        String nome = textNome.getText();
+        EnumNivelVendedor nivelVendedor = (EnumNivelVendedor) comboNivel.getSelectedItem();
+
+        Vendedor toBePersisted = new Vendedor();
+        toBePersisted.setNome(nome);
+        toBePersisted.setCPF(cpf);
+        toBePersisted.setNivel(nivelVendedor);
+        try {
+            if (vendedorDAO.buscar(cpf) == null) {
+                vendedorDAO.insert(toBePersisted);
+
+                JOptionPane.showMessageDialog(null, "Vendedor criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            } else if (editando) {
+                vendedorDAO.update(toBePersisted);
+                JOptionPane.showMessageDialog(null, "Vendedor atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            JOptionPane.showMessageDialog(null, "Já existe um Vendedor com esse CPF!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnSalvarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -145,7 +206,7 @@ public class CadastroVendedor extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSalvar;
-    private javax.swing.JComboBox<String> comboNivel;
+    private javax.swing.JComboBox<EnumNivelVendedor> comboNivel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel labelNivel;
@@ -153,4 +214,29 @@ public class CadastroVendedor extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField textCpf;
     private javax.swing.JTextField textNome;
     // End of variables declaration//GEN-END:variables
+
+
+    public JTextField getTextNome() {
+        return textNome;
+    }
+
+    public void setTextNome(JTextField textNome) {
+        this.textNome = textNome;
+    }
+
+    public JFormattedTextField getTextCpf() {
+        return textCpf;
+    }
+
+    public void setTextCpf(JFormattedTextField textCpf) {
+        this.textCpf = textCpf;
+    }
+
+    public JComboBox<EnumNivelVendedor> getComboNivel() {
+        return comboNivel;
+    }
+
+    public void setComboNivel(JComboBox<EnumNivelVendedor> comboNivel) {
+        this.comboNivel = comboNivel;
+    }
 }

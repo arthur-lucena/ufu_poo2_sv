@@ -5,17 +5,39 @@
  */
 package edu.ufu.poo2.si.telas.cliente;
 
+import edu.ufu.poo2.si.control.ClienteDAO;
+import edu.ufu.poo2.si.model.Cliente;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.util.Collection;
+
 /**
  *
  * @author gmahlow
  */
 public class VisualizarCliente extends javax.swing.JFrame {
 
+    private ClienteDAO clienteDAO;
+    private DefaultListModel<Cliente> clientesList;
+
     /**
      * Creates new form VisualizarCliente2
      */
-    public VisualizarCliente() {
+    public VisualizarCliente() throws ErroException {
+        this.clienteDAO = new ClienteDAO();
+        this.clientesList = new DefaultListModel<>();
+        preencheComponenteListClientes();
         initComponents();
+    }
+
+    public void preencheComponenteListClientes() throws ErroException {
+        Collection<Cliente> clientes = clienteDAO.buscarTodos();
+
+        clientesList.clear();
+
+        for (Cliente cliente : clientes)
+            this.clientesList.addElement(cliente);
     }
 
     /**
@@ -35,11 +57,8 @@ public class VisualizarCliente extends javax.swing.JFrame {
 
         setResizable(false);
 
-        listClientes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        listClientes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listClientes.setModel(clientesList);
         jScrollPane1.setViewportView(listClientes);
 
         labelSistema1.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
@@ -48,8 +67,18 @@ public class VisualizarCliente extends javax.swing.JFrame {
         labelSistema1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnRemover.setText("Remover");
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -74,16 +103,39 @@ public class VisualizarCliente extends javax.swing.JFrame {
                 .addComponent(labelSistema1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnEditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnRemover)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addComponent(btnRemover))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        Cliente toBeEdited = listClientes.getSelectedValue();
+
+        CadastroCliente cadastroCliente = new CadastroCliente(true);
+        cadastroCliente.setVisible(true);
+        cadastroCliente.getTextNome().setText(toBeEdited.getNome());
+        cadastroCliente.getTextCpf().setText(toBeEdited.getCPF());
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        // TODO add your handling code here:
+        Cliente toBeRemoved = listClientes.getSelectedValue();
+        try {
+            clienteDAO.delete(toBeRemoved.getCPF());
+            preencheComponenteListClientes();
+            JOptionPane.showMessageDialog(null, "Cliente deletado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnRemoverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -116,7 +168,12 @@ public class VisualizarCliente extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VisualizarCliente().setVisible(true);
+                try {
+                    new VisualizarCliente().setVisible(true);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -126,6 +183,6 @@ public class VisualizarCliente extends javax.swing.JFrame {
     private javax.swing.JButton btnRemover;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelSistema1;
-    private javax.swing.JList<String> listClientes;
+    private javax.swing.JList<Cliente> listClientes;
     // End of variables declaration//GEN-END:variables
 }

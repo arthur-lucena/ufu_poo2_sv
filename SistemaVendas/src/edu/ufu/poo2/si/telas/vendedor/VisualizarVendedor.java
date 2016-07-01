@@ -5,17 +5,39 @@
  */
 package edu.ufu.poo2.si.telas.vendedor;
 
+import edu.ufu.poo2.si.control.VendedorDAO;
+import edu.ufu.poo2.si.model.Vendedor;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.util.Collection;
+
 /**
  *
  * @author gmahlow
  */
 public class VisualizarVendedor extends javax.swing.JFrame {
 
+    private VendedorDAO vendedorDAO;
+    private DefaultListModel<Vendedor> vendedoresList;
+
     /**
      * Creates new form VisualizarVendedor
      */
-    public VisualizarVendedor() {
+    public VisualizarVendedor() throws ErroException {
+        this.vendedorDAO = new VendedorDAO();
+        this.vendedoresList = new DefaultListModel<>();
+        preencheComponenteListVendedores();
         initComponents();
+    }
+
+    public void preencheComponenteListVendedores() throws ErroException {
+        Collection<Vendedor> vendedores = vendedorDAO.buscarTodos();
+
+        vendedoresList.clear();
+
+        for (Vendedor vendedor : vendedores)
+            this.vendedoresList.addElement(vendedor);
     }
 
     /**
@@ -31,9 +53,7 @@ public class VisualizarVendedor extends javax.swing.JFrame {
         btnEditar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listClientes = new javax.swing.JList<>();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        listVendedores = new javax.swing.JList<>();
 
         labelSistema1.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         labelSistema1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -41,15 +61,22 @@ public class VisualizarVendedor extends javax.swing.JFrame {
         labelSistema1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnRemover.setText("Remover");
-
-        listClientes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
         });
-        jScrollPane1.setViewportView(listClientes);
+
+        listVendedores.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listVendedores.setModel(vendedoresList);
+        jScrollPane1.setViewportView(listVendedores);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -74,16 +101,40 @@ public class VisualizarVendedor extends javax.swing.JFrame {
                 .addComponent(labelSistema1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnEditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnRemover)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addComponent(btnRemover))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        Vendedor toBeEdited = listVendedores.getSelectedValue();
+
+        CadastroVendedor cadastroVendedor = new CadastroVendedor(true);
+        cadastroVendedor.setVisible(true);
+        cadastroVendedor.getTextNome().setText(toBeEdited.getNome());
+        cadastroVendedor.getTextCpf().setText(toBeEdited.getCPF());
+        cadastroVendedor.getComboNivel().setSelectedItem(toBeEdited.getNivel());
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        // TODO add your handling code here:
+        Vendedor toBeRemoved = listVendedores.getSelectedValue();
+        try {
+            vendedorDAO.delete(toBeRemoved.getCPF());
+            preencheComponenteListVendedores();
+            JOptionPane.showMessageDialog(null, "Vendedor deletado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnRemoverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,7 +166,12 @@ public class VisualizarVendedor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VisualizarVendedor().setVisible(true);
+                try {
+                    new VisualizarVendedor().setVisible(true);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -125,6 +181,6 @@ public class VisualizarVendedor extends javax.swing.JFrame {
     private javax.swing.JButton btnRemover;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelSistema1;
-    private javax.swing.JList<String> listClientes;
+    private javax.swing.JList<Vendedor> listVendedores;
     // End of variables declaration//GEN-END:variables
 }

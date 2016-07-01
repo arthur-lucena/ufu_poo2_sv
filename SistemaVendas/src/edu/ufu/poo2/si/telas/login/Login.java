@@ -5,7 +5,13 @@
  */
 package edu.ufu.poo2.si.telas.login;
 
+import edu.ufu.poo2.si.control.VendedorDAO;
+import edu.ufu.poo2.si.model.Vendedor;
 import edu.ufu.poo2.si.telas.menu.Principal;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import java.util.Collection;
 
 /**
  *
@@ -13,11 +19,31 @@ import edu.ufu.poo2.si.telas.menu.Principal;
  */
 public class Login extends javax.swing.JFrame {
 
+    private VendedorDAO vendedorDAO;
+    private DefaultComboBoxModel<Vendedor> vendedorList;
+
     /**
      * Creates new form Login
      */
     public Login() {
+        this.vendedorDAO = new VendedorDAO();
+        this.vendedorList = new DefaultComboBoxModel<>();
+        try {
+            preencheVendedores();
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
         initComponents();
+    }
+
+    public void preencheVendedores() throws ErroException {
+        Collection<Vendedor> vendedores = vendedorDAO.buscarTodos();
+
+        vendedorList.removeAllElements();
+
+        for (Vendedor vendedor : vendedores)
+            this.vendedorList.addElement(vendedor);
     }
 
     /**
@@ -39,7 +65,7 @@ public class Login extends javax.swing.JFrame {
         setName("frmLogin"); // NOI18N
         setResizable(false);
 
-        comboVendedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gustavo Mahlow", "Arthur Vieira", "Leonardo" }));
+        comboVendedor.setModel(vendedorList);
 
         btnSelecionar.setText("Selecionar");
         btnSelecionar.addActionListener(new java.awt.event.ActionListener() {
@@ -133,7 +159,7 @@ public class Login extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSelecionar;
-    private javax.swing.JComboBox<String> comboVendedor;
+    private javax.swing.JComboBox<Vendedor> comboVendedor;
     private javax.swing.JLabel labelSistema;
     private javax.swing.JLabel labelVendedor;
     // End of variables declaration//GEN-END:variables
