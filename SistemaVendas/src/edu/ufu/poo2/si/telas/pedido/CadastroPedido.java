@@ -391,7 +391,6 @@ public class CadastroPedido extends javax.swing.JFrame {
     }
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
         if (tableItemPedido.getSelectedRow() == -1) {
             JOptionPane.showMessageDialog(null, "Selecione um item do pedido!", "Erro!", JOptionPane.ERROR_MESSAGE);
             return;
