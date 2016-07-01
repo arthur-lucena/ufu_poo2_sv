@@ -36,6 +36,7 @@ public class CadastroVendedor extends javax.swing.JFrame {
     }
 
     public void preencheComboBoxNivel() {
+        nivelVendedorList.removeAllElements();
         nivelVendedorList.addElement(EnumNivelVendedor.Prata);
         nivelVendedorList.addElement(EnumNivelVendedor.Platina);
         nivelVendedorList.addElement(EnumNivelVendedor.Ouro);
@@ -43,7 +44,7 @@ public class CadastroVendedor extends javax.swing.JFrame {
 
     public CadastroVendedor(Boolean editando, VisualizarVendedor formBeforeOpenEdit)   {
         this();
-        this.editando = true;
+        this.editando = editando;
         this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
@@ -90,6 +91,8 @@ public class CadastroVendedor extends javax.swing.JFrame {
         comboNivel.setModel(nivelVendedorList);
 
         labelNivel.setText("Nível Vendedor");
+
+        setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

@@ -55,6 +55,8 @@ public class VisualizarPedido extends javax.swing.JFrame {
         labelSistema2.setText("Sistema de Vendas");
         labelSistema2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
+        setResizable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(

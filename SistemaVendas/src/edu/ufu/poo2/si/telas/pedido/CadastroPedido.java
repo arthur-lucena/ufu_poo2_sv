@@ -5,25 +5,114 @@
  */
 package edu.ufu.poo2.si.telas.pedido;
 
+import edu.ufu.poo2.si.control.*;
+import edu.ufu.poo2.si.model.*;
+import edu.ufu.poo2.si.util.enums.EnumFormaPagamento;
+import edu.ufu.poo2.si.util.exceptions.ErroException;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
- *
  * @author gmahlow
  */
 public class CadastroPedido extends javax.swing.JFrame {
 
     private Boolean editando;
 
+    private Vendedor vendedorFromLogin;
+
+    private ClienteDAO clienteDAO;
+    private VendedorDAO vendedorDAO;
+    private ProdutoDAO produtoDAO;
+    private ItemPedidoDAO itemPedidoDAO;
+    private PedidoDAO pedidoDAO;
+
+    private DefaultComboBoxModel<EnumFormaPagamento> formaPagamentoList;
+    private DefaultComboBoxModel<Cliente> clienteList;
+    private DefaultComboBoxModel<Vendedor> vendedorList;
+    private DefaultComboBoxModel<Produto> produtoList;
+    private DefaultTableModel itemPedidoList;
+
+
+    private VisualizarPedido formBeforeOpenEdit;
+
     /**
      * Creates new form CadastroPedido
      */
-    public CadastroPedido() {
+    public CadastroPedido() throws ErroException {
         this.editando = false;
+        this.clienteDAO = new ClienteDAO();
+        this.vendedorDAO = new VendedorDAO();
+        this.produtoDAO = new ProdutoDAO();
+        this.formaPagamentoList = new DefaultComboBoxModel<>();
+        this.clienteList = new DefaultComboBoxModel<>();
+        this.vendedorList = new DefaultComboBoxModel<>();
+        this.produtoList = new DefaultComboBoxModel<>();
+        this.itemPedidoList = new DefaultTableModel();
+        this.itemPedidoDAO = new ItemPedidoDAO();
+        this.pedidoDAO = new PedidoDAO();
+        preencheClienteList();
+        preencheVendedorList();
+        preencheFormaPagamentoList();
+        preencheProdutoList();
+        inicializaItemPedido();
         initComponents();
     }
 
-    public CadastroPedido(Boolean editando) {
+    public CadastroPedido(Vendedor vendedorFromLogin) throws ErroException {
+        this.vendedorFromLogin = vendedorFromLogin;
+    }
+
+    public void inicializaItemPedido() {
+        itemPedidoList.addColumn("Produto");
+        itemPedidoList.addColumn("Quantidade");
+        itemPedidoList.addColumn("Valor Calculado");
+        itemPedidoList.addColumn("Desconto");
+    }
+
+    public void preencheClienteList() throws ErroException {
+        Collection<Cliente> clientes = clienteDAO.buscarTodos();
+
+        clienteList.removeAllElements();
+
+        for (Cliente cliente : clientes)
+            clienteList.addElement(cliente);
+    }
+
+    public void preencheVendedorList() throws ErroException {
+        Collection<Vendedor> vendedores = vendedorDAO.buscarTodos();
+
+        vendedorList.removeAllElements();
+
+        for (Vendedor vendedor : vendedores)
+            vendedorList.addElement(vendedor);
+    }
+
+    public void preencheProdutoList() throws ErroException {
+        Collection<Produto> produtos = produtoDAO.buscarTodos();
+
+        produtoList.removeAllElements();
+
+        for (Produto produto : produtos)
+            produtoList.addElement(produto);
+    }
+
+    public void preencheFormaPagamentoList() throws ErroException {
+        formaPagamentoList.removeAllElements();
+        formaPagamentoList.addElement(EnumFormaPagamento.Boleto);
+        formaPagamentoList.addElement(EnumFormaPagamento.Cartao);
+        formaPagamentoList.addElement(EnumFormaPagamento.Dinheiro);
+    }
+
+    public CadastroPedido(Boolean editando, VisualizarPedido formBeforeOpenEdit) throws ErroException {
         this();
         this.editando = editando;
+        this.formBeforeOpenEdit = formBeforeOpenEdit;
     }
 
     /**
@@ -49,17 +138,21 @@ public class CadastroPedido extends javax.swing.JFrame {
         textQtd = new javax.swing.JFormattedTextField();
         labelQtd = new javax.swing.JLabel();
         btnSalvar = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
+        btnRemove = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tableItemPedido = new javax.swing.JTable();
 
         labelSistema1.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         labelSistema1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelSistema1.setText("Sistema de Vendas");
         labelSistema1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        comboCliente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gustavo" }));
+        comboCliente.setModel(clienteList);
 
-        comboVendedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Gustavo" }));
+        comboVendedor.setModel(vendedorList);
 
-        comboFormaPagamento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Boleto", "Cartão", "Dinheiro" }));
+        comboFormaPagamento.setModel(formaPagamentoList);
 
         labelCliente.setText("Cliente");
 
@@ -71,7 +164,7 @@ public class CadastroPedido extends javax.swing.JFrame {
 
         jLabel1.setText("Valor Total");
 
-        comboProduto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Produto Papel" }));
+        comboProduto.setModel(produtoList);
 
         labelProduto.setText("Produto");
 
@@ -86,87 +179,227 @@ public class CadastroPedido extends javax.swing.JFrame {
             }
         });
 
+        btnAdd.setText("+");
+        btnAdd.setToolTipText("");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
+        btnRemove.setText("-");
+        btnRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveActionPerformed(evt);
+            }
+        });
+
+        tableItemPedido.setModel(itemPedidoList);
+        tableItemPedido.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(tableItemPedido);
+
+        setResizable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSistema1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(labelFormaPagamento)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addGap(55, 55, 55))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(53, 53, 53)
-                        .addComponent(labelCliente)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelVendedor)
-                        .addGap(60, 60, 60))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(comboProduto, javax.swing.GroupLayout.Alignment.LEADING, 0, 175, Short.MAX_VALUE)
-                            .addComponent(comboFormaPagamento, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(comboCliente, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(textValorTotal)
-                            .addComponent(comboVendedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(textQtd))))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(64, 64, 64)
-                .addComponent(labelProduto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelQtd)
-                .addGap(63, 63, 63))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(62, 62, 62)
+                                                .addComponent(labelProduto)
+                                                .addGap(123, 123, 123)
+                                                .addComponent(labelQtd)
+                                                .addContainerGap(531, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(labelSistema1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(47, 47, 47))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(btnSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                                                                        .addComponent(comboProduto, javax.swing.GroupLayout.Alignment.LEADING, 0, 175, Short.MAX_VALUE)
+                                                                                                        .addComponent(comboFormaPagamento, javax.swing.GroupLayout.Alignment.LEADING, 0, 175, Short.MAX_VALUE)
+                                                                                                        .addComponent(comboCliente, javax.swing.GroupLayout.Alignment.LEADING, 0, 175, Short.MAX_VALUE))
+                                                                                                .addGap(18, 18, 18)
+                                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                                        .addComponent(comboVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                        .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                        .addComponent(textValorTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                                .addGap(6, 6, 6))
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addGap(22, 22, 22)
+                                                                                                .addComponent(labelFormaPagamento)
+                                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                                .addComponent(jLabel1)
+                                                                                                .addGap(54, 54, 54)))
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                        .addComponent(btnRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE))
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGap(58, 58, 58)
+                                                                                .addComponent(labelCliente)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                .addComponent(labelVendedor)
+                                                                                .addGap(116, 116, 116)))
+                                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(17, 17, 17))))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSistema1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelProduto)
-                    .addComponent(labelQtd))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelCliente)
-                    .addComponent(labelVendedor))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelFormaPagamento)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboFormaPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textValorTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addComponent(btnSalvar)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(labelSistema1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(labelProduto)
+                                        .addComponent(labelQtd))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(comboProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(textQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(labelVendedor)
+                                                                        .addComponent(labelCliente)))
+                                                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(comboVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(comboCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(jLabel1)
+                                                                        .addComponent(labelFormaPagamento))
+                                                                .addGap(10, 10, 10)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(textValorTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(comboFormaPagamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                        .addComponent(btnRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addGap(20, 20, 20)
+                                .addComponent(btnSalvar)
+                                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        if (comboProduto.getSelectedItem() == null || textQtd.getValue() == null ||
+                comboCliente.getSelectedItem() == null || comboVendedor.getSelectedItem() == null ||
+                comboFormaPagamento.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Você precisa preencher todos os campos corretamente!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Cliente cliente = (Cliente) comboCliente.getSelectedItem();
+        Vendedor vendedor = (Vendedor) comboVendedor.getSelectedItem();
+        EnumFormaPagamento formaPagamento = (EnumFormaPagamento) comboFormaPagamento.getSelectedItem();
+
+        Pedido toBePersisted = new Pedido();
+        toBePersisted.setCliente(cliente);
+        toBePersisted.setVendedor(vendedor);
+        toBePersisted.setFormaPagamento(formaPagamento);
+        toBePersisted.setItens(getItemsPedido());
+
+        try {
+            if (editando) {
+//                formBeforeOpenEdit.preencheProdutosList();
+                this.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Pedido atualizado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            pedidoDAO.insert(toBePersisted);
+
+            this.setVisible(false);
+            JOptionPane.showMessageDialog(null, "Pedido criado!", "Sucesso!", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ErroException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro desconhecido", "Erro!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+
     }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (textQtd.getValue() == null) {
+            JOptionPane.showMessageDialog(null, "Digite uma quantidade!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Produto produto = (Produto) comboProduto.getSelectedItem();
+        Integer quantidade = Integer.parseInt(textQtd.getValue().toString());
+        BigDecimal preco = produto.getPreco().multiply(new BigDecimal(quantidade));
+
+        itemPedidoList.addRow(new Object[]{produto, quantidade, preco, 0});
+
+        atualizaValorTotal();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    public void atualizaValorTotal() {
+        Integer qtdRows = tableItemPedido.getRowCount();
+        BigDecimal valorTotal = BigDecimal.ZERO;
+
+        for (int i = 0; i < qtdRows; i++) {
+            BigDecimal valor = (BigDecimal) itemPedidoList.getValueAt(i, 2);
+            valorTotal = valorTotal.add(valor);
+        }
+
+        textValorTotal.setValue(valorTotal);
+    }
+
+    public List<ItemPedido> getItemsPedido()  {
+        Integer qtdRows = tableItemPedido.getRowCount();
+        List<ItemPedido> itensPedido = new ArrayList<>();
+
+        for (int i = 0; i < qtdRows; i++) {
+            Produto produto = (Produto) itemPedidoList.getValueAt(i, 0);
+            Integer quantidade = (Integer) itemPedidoList.getValueAt(i, 1);
+            BigDecimal valor = (BigDecimal) itemPedidoList.getValueAt(i, 2);
+            Integer desconto = (Integer) itemPedidoList.getValueAt(i, 3);
+
+            ItemPedido toBeAdded = new ItemPedido();
+            toBeAdded.setQuantidade(quantidade);
+            toBeAdded.setProduto(produto);
+            toBeAdded.setValor(valor);
+            toBeAdded.setDesconto(desconto);
+
+            itensPedido.add(toBeAdded);
+
+        }
+
+        return itensPedido;
+    }
+
+    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        if (tableItemPedido.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "Selecione um item do pedido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        itemPedidoList.removeRow(tableItemPedido.getSelectedRow());
+        atualizaValorTotal();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -175,7 +408,7 @@ public class CadastroPedido extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -198,24 +431,33 @@ public class CadastroPedido extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CadastroPedido().setVisible(true);
+                try {
+                    new CadastroPedido().setVisible(true);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnRemove;
     private javax.swing.JButton btnSalvar;
-    private javax.swing.JComboBox<String> comboCliente;
-    private javax.swing.JComboBox<String> comboFormaPagamento;
-    private javax.swing.JComboBox<String> comboProduto;
-    private javax.swing.JComboBox<String> comboVendedor;
+    private javax.swing.JComboBox<Cliente> comboCliente;
+    private javax.swing.JComboBox<EnumFormaPagamento> comboFormaPagamento;
+    private javax.swing.JComboBox<Produto> comboProduto;
+    private javax.swing.JComboBox<Vendedor> comboVendedor;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelCliente;
     private javax.swing.JLabel labelFormaPagamento;
     private javax.swing.JLabel labelProduto;
     private javax.swing.JLabel labelQtd;
     private javax.swing.JLabel labelSistema1;
     private javax.swing.JLabel labelVendedor;
+    private javax.swing.JTable tableItemPedido;
     private javax.swing.JFormattedTextField textQtd;
     private javax.swing.JFormattedTextField textValorTotal;
     // End of variables declaration//GEN-END:variables

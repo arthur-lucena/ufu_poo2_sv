@@ -5,6 +5,7 @@
  */
 package edu.ufu.poo2.si.telas.menu;
 
+import edu.ufu.poo2.si.model.Vendedor;
 import edu.ufu.poo2.si.telas.cliente.CadastroCliente;
 import edu.ufu.poo2.si.telas.cliente.VisualizarCliente;
 import edu.ufu.poo2.si.telas.estoque.CadastroProduto;
@@ -22,11 +23,18 @@ import javax.swing.*;
  */
 public class Principal extends javax.swing.JFrame {
 
+    private Vendedor vendedorFromLogin;
+
     /**
      * Creates new form Principal
      */
     public Principal() {
         initComponents();
+    }
+
+    public Principal(Vendedor vendedorFromLogin)  {
+        this();
+        this.vendedorFromLogin = vendedorFromLogin;
     }
 
     /**
@@ -103,7 +111,12 @@ public class Principal extends javax.swing.JFrame {
         btnCadastrarPedido.setText("Cadastrar Pedido");
         btnCadastrarPedido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCadastrarPedidoActionPerformed(evt);
+                try {
+                    btnCadastrarPedidoActionPerformed(evt);
+                } catch (ErroException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Erro!", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -200,7 +213,7 @@ public class Principal extends javax.swing.JFrame {
         new CadastroProduto().setVisible(true);
     }//GEN-LAST:event_btnCadastrarProdutoActionPerformed
 
-    private void btnCadastrarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarPedidoActionPerformed
+    private void btnCadastrarPedidoActionPerformed(java.awt.event.ActionEvent evt) throws ErroException {//GEN-FIRST:event_btnCadastrarPedidoActionPerformed
         new CadastroPedido().setVisible(true);
     }//GEN-LAST:event_btnCadastrarPedidoActionPerformed
 

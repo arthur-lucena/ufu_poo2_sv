@@ -80,6 +80,8 @@ public class CadastroProduto extends javax.swing.JFrame {
         labelSistema1.setText("Sistema de Vendas");
         labelSistema1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
+        setResizable(false);
+
         labelNome.setText("Nome");
 
         comboEstado.setModel(estadoEstoqueList);

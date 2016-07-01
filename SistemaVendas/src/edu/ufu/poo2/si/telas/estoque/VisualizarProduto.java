@@ -67,6 +67,7 @@ public class VisualizarProduto extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(listProdutos);
         listProdutos.setModel(produtosList);
+        listProdutos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         btnEditar.setText("Editar");
         btnEditar.addActionListener(new java.awt.event.ActionListener() {
@@ -81,6 +82,8 @@ public class VisualizarProduto extends javax.swing.JFrame {
                 btnRemoverActionPerformed(evt);
             }
         });
+
+        setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

@@ -78,6 +78,8 @@ public class VisualizarVendedor extends javax.swing.JFrame {
         listVendedores.setModel(vendedoresList);
         jScrollPane1.setViewportView(listVendedores);
 
+        setResizable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
